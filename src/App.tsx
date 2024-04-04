@@ -1,5 +1,6 @@
-import { Button, ConfigProvider, theme } from "antd";
-import "./App.css";
+import { ConfigProvider, theme } from "antd";
+import Header from "./components/Header/Header";
+import { Outlet } from "react-router-dom";
 
 function App() {
   return (
@@ -12,9 +13,10 @@ function App() {
         // algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
       }}
     >
-      <div className="App">
-        <Button type="primary">Click me!</Button>
-      </div>
+      <Header />
+      <main>
+        <Outlet />
+      </main>
     </ConfigProvider>
   );
 }
