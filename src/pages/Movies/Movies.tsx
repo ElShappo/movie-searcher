@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../constants";
 import { api } from "../../utils";
-import { Country } from "../../types";
+import { Country, Movie, MovieUniversalSearchResponse } from "../../types";
 
 dayjs.extend(customParseFormat);
 
@@ -23,9 +23,13 @@ const Movies = () => {
   const [inputValue, setInputValue] = useState("");
   const [debouncedInputValue, setDebouncedInputValue] = useState("");
   const [countries, setCountries] = useState<SelectProps["options"]>([]);
-  const [pageSize, setPageSize] = useState(1);
+  const [countriesLoading, setCountriesLoading] = useState(false);
+  const [cardLoading, setCardLoading] = useState(false);
+  const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const [pageNo, setPageNo] = useState(1);
-  const [movies, setMovies] = useState<[]>([]);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [pagesCount, setPagesCount] = useState(50);
+  const [startAndEndYears, setStartAndEndYears] = useState<[number, number]>();
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);
@@ -39,6 +43,7 @@ const Movies = () => {
 
   useEffect(() => {
     async function fetchCountries() {
+      setCountriesLoading(true);
       const countries = (await api.get("countries")) as Country[];
       console.log(countries);
       setCountries(
@@ -47,6 +52,7 @@ const Movies = () => {
           value: country.name,
         }))
       );
+      setCountriesLoading(false);
     }
     fetchCountries();
   }, []);
@@ -58,13 +64,33 @@ const Movies = () => {
     return () => clearTimeout(timeoutId);
   }, [inputValue]);
 
-  // useEffect(() => {
-  //   async function fetchMovies() {
-  //     const movies = await api.getMovies({ limit: pageSize, page: pageNo, name: debouncedInputValue });
-  //     setMovies(movies);
-  //   }
-  //   fetchMovies();
-  // }, [debouncedInputValue, pageNo, pageSize]);
+  useEffect(() => {
+    async function fetchMovies() {
+      const timeoutId = setTimeout(() => {
+        setCardLoading(true);
+      }, 500);
+
+      const response = (await api.getMovies({
+        limit: pageSize,
+        page: pageNo,
+        name: debouncedInputValue,
+        years: startAndEndYears,
+        countries: countries?.map((country) => String(country.value)),
+      })) as MovieUniversalSearchResponse;
+
+      const movies = response.docs;
+
+      clearTimeout(timeoutId);
+
+      console.warn("Got movies: ");
+      console.warn(movies);
+
+      setMovies(movies);
+      setCardLoading(false);
+      setPagesCount(response.pages);
+    }
+    fetchMovies();
+  }, [countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
 
   return (
     <main>
@@ -79,17 +105,17 @@ const Movies = () => {
               start: "startInput",
               end: "endInput",
             }}
-            onFocus={(_, info) => {
-              console.log("Focus:", info.range);
-            }}
-            onBlur={(_, info) => {
-              console.log("Blur:", info.range);
+            onChange={(date, dateString) => {
+              const dateNumbers = dateString.map((str) => +str) as [number, number];
+              console.log(dateNumbers);
+              setStartAndEndYears(dateNumbers);
             }}
           />
         </article>
         <article className="flex items-center gap-x-2">
           <span className="text-xl max-md:text-base flex items-center">Countries: </span>
           <Select
+            loading={countriesLoading}
             className="w-48 max-h-20 overflow-y-auto"
             mode="multiple"
             allowClear
@@ -118,15 +144,21 @@ const Movies = () => {
       </section>
       <Divider />
       <section>
-        <Card
-          hoverable
-          style={{ width: 240 }}
-          cover={<img alt="example" src="https://os.alipayobjects.com/rmsportal/QBnOOoLaAfKPirc.png" />}
-        >
-          <Meta title="Europe Street beat" description="www.instagram.com" />
-        </Card>
+        <div className="px-4 gap-8 justify-center pb-4 flex flex-wrap">
+          {movies.map((movie) => (
+            <Card
+              key={movie.id}
+              loading={cardLoading}
+              hoverable
+              style={{ width: 240 }}
+              cover={<img alt="example" src={movie.poster.url} />}
+            >
+              <Meta title={movie.name} description={movie.shortDescription} />
+            </Card>
+          ))}
+        </div>
         <div className="flex justify-center">
-          <Pagination onChange={onPaginationChange} total={500} pageSizeOptions={pageSizeOptions} />
+          <Pagination onChange={onPaginationChange} total={pagesCount} pageSizeOptions={pageSizeOptions} />
         </div>
       </section>
     </main>

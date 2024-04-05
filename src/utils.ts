@@ -5,23 +5,40 @@ class API {
   #apiPath = "https://api.kinopoisk.dev/v1.4";
   #apiKey = String(process.env.REACT_APP_API_KEY);
 
+  #countries: [] | undefined;
+  #types: [] | undefined;
+  #genres: [] | undefined;
+  #networks: [] | undefined;
+
   async get(mode: "countries" | "types" | "genres" | "networks") {
-    const url = new URL(`${this.#oldApiPath}/movie/possible-values-by-field`);
     let key: string;
     switch (mode) {
       case "countries":
+        if (this.#countries) {
+          return this.#countries;
+        }
         key = "countries.name";
         break;
       case "types":
+        if (this.#types) {
+          return this.#types;
+        }
         key = "type";
         break;
       case "genres":
+        if (this.#genres) {
+          return this.#genres;
+        }
         key = "genres.name";
         break;
       case "networks":
+        if (this.#networks) {
+          return this.#networks;
+        }
         key = "networks.items.name";
         break;
     }
+    const url = new URL(`${this.#oldApiPath}/movie/possible-values-by-field`);
     url.searchParams.set("field", key);
     const href = url.href;
 
@@ -33,6 +50,21 @@ class API {
       });
       const result = await response.json();
       console.log(result);
+
+      switch (mode) {
+        case "countries":
+          this.#countries = result;
+          break;
+        case "types":
+          this.#types = result;
+          break;
+        case "genres":
+          this.#genres = result;
+          break;
+        case "networks":
+          this.#networks = result;
+          break;
+      }
 
       return result;
     } catch (error) {
