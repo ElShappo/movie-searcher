@@ -1,4 +1,4 @@
-import { Card, DatePicker, Input, Select, SelectProps } from "antd";
+import { Card, DatePicker, Divider, Input, Select, SelectProps } from "antd";
 import Meta from "antd/es/card/Meta";
 import { useEffect } from "react";
 import dayjs from "dayjs";
@@ -29,7 +29,7 @@ const Movies = () => {
     <main>
       <section className="flex flex-wrap justify-center gap-x-5 gap-y-2 p-5">
         <article className="flex items-center gap-x-2">
-          <span>Years: </span>
+          <span className="text-xl max-md:text-base flex items-center">Years: </span>
           <RangePicker
             picker="year"
             minDate={dayjs(minDateString, dateFormat)}
@@ -47,7 +47,7 @@ const Movies = () => {
           />
         </article>
         <article className="flex items-center gap-x-2">
-          <span>Countries: </span>
+          <span className="text-xl max-md:text-base flex items-center">Countries: </span>
           <Select
             className="w-48 max-h-20 overflow-y-auto"
             mode="multiple"
@@ -59,7 +59,7 @@ const Movies = () => {
           />
         </article>
         <article className="flex items-center gap-x-2">
-          <span>Age rating: </span>
+          <span className="text-xl max-md:text-base flex items-center">Age rating: </span>
           <Select
             className="w-48 max-h-20 overflow-y-auto"
             mode="multiple"
@@ -71,9 +71,13 @@ const Movies = () => {
           />
         </article>
       </section>
-      <section>
-        <Input placeholder="Find movie or series: " />
+      <section className="flex flex-wrap justify-center">
+        <div className="w-full text-center text-xl max-md:text-base">Search by name:</div>
+        <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
+          <Input placeholder="Find movie or series: " />
+        </div>
       </section>
+      <Divider />
       <section>
         <Card
           hoverable
