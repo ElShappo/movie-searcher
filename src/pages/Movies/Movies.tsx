@@ -1,30 +1,71 @@
-import { Card, DatePicker, Divider, Input, Select, SelectProps } from "antd";
+import { Card, DatePicker, Divider, Input, Pagination, PaginationProps, Select, SelectProps } from "antd";
 import Meta from "antd/es/card/Meta";
-import { useEffect } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { dateFormat, minDateString } from "../../constants";
+import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../constants";
+import { api } from "../../utils";
+import { Country } from "../../types";
 
 dayjs.extend(customParseFormat);
 
 const { RangePicker } = DatePicker;
-const options: SelectProps["options"] = [];
-
-for (let i = 10; i < 36; i++) {
-  options.push({
-    label: i.toString(36) + i,
-    value: i.toString(36) + i,
-  });
-}
+const ageRatingOptions: SelectProps["options"] = ageRatings.map((age) => ({
+  label: age,
+  value: age,
+}));
 
 const handleChange = (value: string[]) => {
   console.log(`selected ${value}`);
 };
 
 const Movies = () => {
+  const [inputValue, setInputValue] = useState("");
+  const [debouncedInputValue, setDebouncedInputValue] = useState("");
+  const [countries, setCountries] = useState<SelectProps["options"]>([]);
+  const [pageSize, setPageSize] = useState(1);
+  const [pageNo, setPageNo] = useState(1);
+  const [movies, setMovies] = useState<[]>([]);
+
+  const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
+    setInputValue((event.target as HTMLInputElement).value);
+  };
+
+  const onPaginationChange: PaginationProps["onChange"] = (pageNo, pageSize) => {
+    setPageNo(pageNo);
+    setPageSize(pageSize);
+    console.log(pageNo, pageSize);
+  };
+
   useEffect(() => {
-    console.log(process.env.REACT_APP_API_KEY);
+    async function fetchCountries() {
+      const countries = (await api.get("countries")) as Country[];
+      console.log(countries);
+      setCountries(
+        countries.map((country) => ({
+          label: country.name,
+          value: country.name,
+        }))
+      );
+    }
+    fetchCountries();
   }, []);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setDebouncedInputValue(inputValue);
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, [inputValue]);
+
+  // useEffect(() => {
+  //   async function fetchMovies() {
+  //     const movies = await api.getMovies({ limit: pageSize, page: pageNo, name: debouncedInputValue });
+  //     setMovies(movies);
+  //   }
+  //   fetchMovies();
+  // }, [debouncedInputValue, pageNo, pageSize]);
+
   return (
     <main>
       <section className="flex flex-wrap justify-center gap-x-5 gap-y-2 p-5">
@@ -53,9 +94,8 @@ const Movies = () => {
             mode="multiple"
             allowClear
             placeholder="Choose countries"
-            defaultValue={["a10", "c12"]}
             onChange={handleChange}
-            options={options}
+            options={countries}
           />
         </article>
         <article className="flex items-center gap-x-2">
@@ -65,16 +105,15 @@ const Movies = () => {
             mode="multiple"
             allowClear
             placeholder="Choose age rating"
-            defaultValue={["a10", "c12"]}
             onChange={handleChange}
-            options={options}
+            options={ageRatingOptions}
           />
         </article>
       </section>
       <section className="flex flex-wrap justify-center">
         <div className="w-full text-center text-xl max-md:text-base">Search by name:</div>
         <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
-          <Input placeholder="Find movie or series: " />
+          <Input placeholder="Find movie or series: " onChange={handleInputChange} />
         </div>
       </section>
       <Divider />
@@ -86,6 +125,9 @@ const Movies = () => {
         >
           <Meta title="Europe Street beat" description="www.instagram.com" />
         </Card>
+        <div className="flex justify-center">
+          <Pagination onChange={onPaginationChange} total={500} pageSizeOptions={pageSizeOptions} />
+        </div>
       </section>
     </main>
   );
