@@ -1,4 +1,4 @@
-import { ConfigProvider, theme } from "antd";
+import { ConfigProvider, Divider, theme } from "antd";
 import Header from "./components/Header/Header";
 import { Outlet } from "react-router-dom";
 
@@ -14,6 +14,7 @@ function App() {
       }}
     >
       <Header />
+      <Divider className="m-0" />
       <main>
         <Outlet />
       </main>
