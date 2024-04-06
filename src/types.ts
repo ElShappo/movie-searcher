@@ -37,3 +37,10 @@ export type MovieUniversalSearchResponse = {
   page: number;
   pages: number;
 };
+
+export type TreeData = {
+  title: string;
+  value: string;
+  key: string;
+  children?: TreeData[];
+};

@@ -1,35 +1,34 @@
-import { Card, DatePicker, Divider, Input, Pagination, PaginationProps, Select, SelectProps } from "antd";
+import { Card, DatePicker, Divider, Input, Pagination, PaginationProps, TreeSelect } from "antd";
 import Meta from "antd/es/card/Meta";
 import { FormEvent, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../constants";
 import { api } from "../../utils";
-import { Country, Movie, MovieUniversalSearchResponse } from "../../types";
+import { Country, Movie, MovieUniversalSearchResponse, TreeData } from "../../types";
 
 dayjs.extend(customParseFormat);
 
 const { RangePicker } = DatePicker;
-const ageRatingOptions: SelectProps["options"] = ageRatings.map((age) => ({
-  label: age,
-  value: age,
-}));
-
-const handleChange = (value: string[]) => {
-  console.log(`selected ${value}`);
-};
 
 const Movies = () => {
   const [inputValue, setInputValue] = useState("");
   const [debouncedInputValue, setDebouncedInputValue] = useState("");
-  const [countries, setCountries] = useState<SelectProps["options"]>([]);
-  const [countriesLoading, setCountriesLoading] = useState(false);
+
   const [cardLoading, setCardLoading] = useState(false);
+
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
-  const [pageNo, setPageNo] = useState(1);
-  const [movies, setMovies] = useState<Movie[]>([]);
   const [pagesCount, setPagesCount] = useState(50);
+  const [pageNo, setPageNo] = useState(1);
+
+  const [chosenAgeRatings, setChosenAgeRatings] = useState<string[]>([]);
+  const [chosenCountries, setChosenCountries] = useState<string[]>([]);
+
+  const [movies, setMovies] = useState<Movie[]>([]);
   const [startAndEndYears, setStartAndEndYears] = useState<[number, number]>();
+
+  const [countries, setCountries] = useState<TreeData[]>([]);
+  const [countriesLoading, setCountriesLoading] = useState(false);
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);
@@ -41,17 +40,44 @@ const Movies = () => {
     console.log(pageNo, pageSize);
   };
 
+  const handleAgeRatingChange = (value: string[]) => {
+    console.log(`selected age ratings ${value}`);
+    const filteredValue = value.filter((val) => val !== "all");
+    console.log(`filtered selected age ratings ${filteredValue}`);
+    setChosenAgeRatings(filteredValue);
+  };
+
+  const handleCountriesChange = (value: string[]) => {
+    console.log(`selected countries ${value}`);
+    const filteredValue = value.filter((val) => val !== "all");
+    console.log(`filtered selected countries ${filteredValue}`);
+    setChosenCountries(filteredValue);
+  };
+
   useEffect(() => {
     async function fetchCountries() {
       setCountriesLoading(true);
       const countries = (await api.get("countries")) as Country[];
       console.log(countries);
-      setCountries(
-        countries.map((country) => ({
-          label: country.name,
+
+      const countriesTreeData = [
+        {
+          title: "All",
+          value: "all",
+          key: "all",
+          children: [],
+        },
+      ] as TreeData[];
+
+      countries.forEach((country) => {
+        countriesTreeData[0].children!.push({
+          title: country.name,
           value: country.name,
-        }))
-      );
+          key: country.name,
+        });
+      });
+
+      setCountries(countriesTreeData);
       setCountriesLoading(false);
     }
     fetchCountries();
@@ -75,7 +101,8 @@ const Movies = () => {
         page: pageNo,
         name: debouncedInputValue,
         years: startAndEndYears,
-        countries: countries?.map((country) => String(country.value)),
+        countries: chosenCountries,
+        ratingsMpaa: chosenAgeRatings,
       })) as MovieUniversalSearchResponse;
 
       const movies = response.docs;
@@ -90,7 +117,7 @@ const Movies = () => {
       setPagesCount(response.pages);
     }
     fetchMovies();
-  }, [countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
+  }, [chosenAgeRatings, chosenCountries, countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
 
   return (
     <main>
@@ -114,25 +141,25 @@ const Movies = () => {
         </article>
         <article className="flex items-center gap-x-2">
           <span className="text-xl max-md:text-base flex items-center">Countries: </span>
-          <Select
-            loading={countriesLoading}
+          <TreeSelect
             className="w-48 max-h-20 overflow-y-auto"
-            mode="multiple"
-            allowClear
+            treeData={countries}
+            treeCheckable
             placeholder="Choose countries"
-            onChange={handleChange}
-            options={countries}
+            onChange={handleCountriesChange}
+            loading={countriesLoading}
+            showCheckedStrategy="SHOW_PARENT"
           />
         </article>
         <article className="flex items-center gap-x-2">
           <span className="text-xl max-md:text-base flex items-center">Age rating: </span>
-          <Select
+          <TreeSelect
             className="w-48 max-h-20 overflow-y-auto"
-            mode="multiple"
-            allowClear
+            treeData={ageRatings}
+            treeCheckable
             placeholder="Choose age rating"
-            onChange={handleChange}
-            options={ageRatingOptions}
+            onChange={handleAgeRatingChange}
+            showCheckedStrategy="SHOW_PARENT"
           />
         </article>
       </section>

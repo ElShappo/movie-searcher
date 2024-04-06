@@ -1,5 +1,3 @@
-import { AgeRating } from "./types";
-
 class API {
   #oldApiPath = "https://api.kinopoisk.dev/v1";
   #apiPath = "https://api.kinopoisk.dev/v1.4";
@@ -86,12 +84,12 @@ class API {
     name: string;
     years?: [number, number];
     countries?: string[]; // one can get list of all countries
-    ratingsMpaa?: AgeRating[];
+    ratingsMpaa?: string[];
   }) {
-    const url = new URL(`${this.#apiPath}/movie/search`);
+    // const url = new URL(`${this.#apiPath}/movie/search`);
+    const url = new URL(`${this.#apiPath}/movie`);
     url.searchParams.set("page", String(page));
     url.searchParams.set("limit", String(limit));
-    url.searchParams.set("query", name);
 
     if (years) {
       url.searchParams.append("year", years.join("-"));
@@ -106,8 +104,10 @@ class API {
         url.searchParams.append("ratingMpaa", String(rating));
       }
     }
+    // url.searchParams.set("query", name);
 
     const href = url.href;
+    console.log(`Total href = ${href}`);
 
     try {
       const response = await fetch(href, {
