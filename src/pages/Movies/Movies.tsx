@@ -1,4 +1,4 @@
-import { Card, DatePicker, Divider, Input, Pagination, PaginationProps, TreeSelect } from "antd";
+import { Card, DatePicker, Divider, Input, Pagination, PaginationProps, Tooltip, TreeSelect } from "antd";
 import Meta from "antd/es/card/Meta";
 import { FormEvent, useEffect, useState } from "react";
 import dayjs from "dayjs";
@@ -6,6 +6,7 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../constants";
 import { api } from "../../utils";
 import { Country, Movie, MovieUniversalSearchResponse, TreeData } from "../../types";
+import NoResults from "../../components/NoResults/NoResults";
 
 dayjs.extend(customParseFormat);
 
@@ -15,8 +16,6 @@ const Movies = () => {
   const [inputValue, setInputValue] = useState("");
   const [debouncedInputValue, setDebouncedInputValue] = useState("");
 
-  const [cardLoading, setCardLoading] = useState(false);
-
   const [pageSize, setPageSize] = useState(pageSizeOptions[0]);
   const [pagesCount, setPagesCount] = useState(50);
   const [pageNo, setPageNo] = useState(1);
@@ -25,6 +24,7 @@ const Movies = () => {
   const [chosenCountries, setChosenCountries] = useState<string[]>([]);
 
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [moviesLoading, setMoviesLoading] = useState(true);
   const [startAndEndYears, setStartAndEndYears] = useState<[number, number]>();
 
   const [countries, setCountries] = useState<TreeData[]>([]);
@@ -93,7 +93,7 @@ const Movies = () => {
   useEffect(() => {
     async function fetchMovies() {
       const timeoutId = setTimeout(() => {
-        setCardLoading(true);
+        setMoviesLoading(true);
       }, 500);
 
       const response = (await api.getMovies({
@@ -113,7 +113,7 @@ const Movies = () => {
       console.warn(movies);
 
       setMovies(movies);
-      setCardLoading(false);
+      setMoviesLoading(false);
       setPagesCount(response.pages);
     }
     fetchMovies();
@@ -171,20 +171,43 @@ const Movies = () => {
       </section>
       <Divider />
       <section>
-        <div className="px-4 gap-8 justify-center pb-4 flex flex-wrap">
-          {movies.map((movie) => (
-            <Card
-              key={movie.id}
-              loading={cardLoading}
-              hoverable
-              style={{ width: 240 }}
-              cover={<img alt="example" src={movie.poster.url} />}
-            >
-              <Meta title={movie.name} description={movie.shortDescription} />
-            </Card>
-          ))}
+        <div className="px-4 gap-8 justify-center flex flex-wrap">
+          {moviesLoading ? (
+            new Array(pageSize).fill(1).map((val, index) => (
+              <Card key={index} loading={true} style={{ width: 240 }}>
+                <Meta title="Loading..." description="Loading..." />
+              </Card>
+            ))
+          ) : !moviesLoading && !movies.length ? (
+            <NoResults />
+          ) : (
+            movies.map((movie) => (
+              <Card
+                key={movie.id}
+                hoverable
+                style={{ width: 240 }}
+                cover={<img alt="example" src={movie.poster.url || "no-poster.jpg"} />}
+              >
+                <Meta
+                  title={movie.name}
+                  description={
+                    movie.shortDescription ? (
+                      movie.shortDescription
+                    ) : movie.description ? (
+                      <Tooltip title={movie.description} placement="right" mouseEnterDelay={0.5}>
+                        <div>{movie.description}</div>
+                      </Tooltip>
+                    ) : (
+                      <span className="italic">Описание картины отсутствует</span>
+                    )
+                  }
+                  className="max-h-48"
+                />
+              </Card>
+            ))
+          )}
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center py-4">
           <Pagination onChange={onPaginationChange} total={pagesCount} pageSizeOptions={pageSizeOptions} />
         </div>
       </section>

@@ -2,6 +2,7 @@ class API {
   #oldApiPath = "https://api.kinopoisk.dev/v1";
   #apiPath = "https://api.kinopoisk.dev/v1.4";
   #apiKey = String(process.env.REACT_APP_API_KEY);
+  #selectFieldsMoviesPage = ["id", "name", "description", "shortDescription", "poster"];
 
   #countries: [] | undefined;
   #types: [] | undefined;
@@ -90,6 +91,10 @@ class API {
     const url = new URL(`${this.#apiPath}/movie`);
     url.searchParams.set("page", String(page));
     url.searchParams.set("limit", String(limit));
+
+    for (const field of this.#selectFieldsMoviesPage) {
+      url.searchParams.append("selectFields", field);
+    }
 
     if (years) {
       url.searchParams.append("year", years.join("-"));
