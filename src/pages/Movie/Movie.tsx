@@ -33,11 +33,19 @@ const MoviePage = () => {
         boxShadow: "inset 0 0 200px 200px rgba(0,0,0,0.9)",
       }}
     >
-      <h1 className="text-4xl pt-10 text-center text-white font-extrabold">{movie?.name}</h1>
+      {movie?.name ? (
+        <h1 className="text-4xl pt-10 text-center text-white font-extrabold">{movie?.name}</h1>
+      ) : (
+        <h1 className="text-4xl pt-10 text-center text-white font-extrabold italic">Без названия</h1>
+      )}
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8 pt-8 px-14">
         <article className="w-2/6 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
           <h2>Описание</h2>
-          <p className="pt-2">{movie?.description}</p>
+          {movie?.description ? (
+            <p className="pt-2">{movie?.description}</p>
+          ) : (
+            <p className="pt-2 italic">Описание фильма отсутствует</p>
+          )}
         </article>
         <article className="w-1/5 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
           <h2>Рейтинги</h2>
@@ -61,21 +69,25 @@ const MoviePage = () => {
         </article>
         <article className="w-2/5 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
           <h2>Кадры</h2>
-          <Image.PreviewGroup>
-            <Carousel
-              autoplay
-              autoplaySpeed={4000}
-              infinite={false}
-              className="pt-4 pb-2"
-              dots={{ className: "text-white" }}
-            >
-              {movieImages.map((image) => (
-                <div className="!flex !justify-center">
-                  <Image src={image} alt="image" fallback="fallback.png" className="max-h-[400px]" />
-                </div>
-              ))}
-            </Carousel>
-          </Image.PreviewGroup>
+          {movieImages.length ? (
+            <Image.PreviewGroup>
+              <Carousel
+                autoplay
+                autoplaySpeed={4000}
+                infinite={false}
+                className="pt-4 pb-2"
+                dots={{ className: "text-white" }}
+              >
+                {movieImages.map((image) => (
+                  <div className="!flex !justify-center" key={image}>
+                    <Image src={image} alt="image" fallback="fallback.png" className="max-h-[400px]" />
+                  </div>
+                ))}
+              </Carousel>
+            </Image.PreviewGroup>
+          ) : (
+            <p className="pt-2 italic">По данной картине не нашлось ни одного снимка</p>
+          )}
         </article>
       </div>
     </section>

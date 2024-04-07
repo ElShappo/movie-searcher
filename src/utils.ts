@@ -225,6 +225,8 @@ class API {
     }
   }
 
+  async getSeriesEpisodesById(id: string) {}
+
   async getRandomMovie({
     genres,
     countries,
