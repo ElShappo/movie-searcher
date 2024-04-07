@@ -148,8 +148,8 @@ const Movies = () => {
   }, [chosenAgeRatings, chosenCountries, countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
 
   const filteredMovies = useMemo(() => {
-    return movies.filter((movie) => movie.name && (movie.poster.url || movie.description || movie.shortDescription));
-    // return movies;
+    // return movies.filter((movie) => movie.name && (movie.poster.url || movie.description || movie.shortDescription));
+    return movies;
   }, [movies]);
 
   return (
