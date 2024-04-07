@@ -18,6 +18,7 @@ import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../co
 import { api } from "../../utils";
 import { Country, Movie, MoviePickRadioOption, MovieUniversalSearchResponse, TreeData } from "../../types";
 import NoResults from "../../components/NoResults/NoResults";
+import { useNavigate } from "react-router-dom";
 
 dayjs.extend(customParseFormat);
 
@@ -42,6 +43,7 @@ const Movies = () => {
   const [countriesLoading, setCountriesLoading] = useState(false);
 
   const [radioValue, setRadioValue] = useState<MoviePickRadioOption>("movieFilters");
+  const navigate = useNavigate();
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);
@@ -70,6 +72,10 @@ const Movies = () => {
   const onRadioChange = (e: RadioChangeEvent) => {
     console.log("radio checked", e.target.value);
     setRadioValue(e.target.value);
+  };
+
+  const handleCardClick = (id: string) => {
+    navigate(`/movie/${id}`);
   };
 
   useEffect(() => {
@@ -154,6 +160,8 @@ const Movies = () => {
 
   return (
     <>
+      <Divider className="m-0" />
+
       <main>
         <section className="w-full flex flex-wrap items-center gap-x-3 gap-y-2 justify-center pt-4">
           <span className="pb-1">Выбрать фильм: </span>
@@ -230,6 +238,7 @@ const Movies = () => {
                   hoverable
                   style={{ width: 240 }}
                   cover={<img alt="example" src={movie.poster.url || "no-poster.jpg"} />}
+                  onClick={() => handleCardClick(movie.id)}
                 >
                   <Meta
                     title={movie.name}

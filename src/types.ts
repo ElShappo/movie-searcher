@@ -7,7 +7,7 @@ export type Country = {
 };
 
 export type Movie = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   shortDescription: string;

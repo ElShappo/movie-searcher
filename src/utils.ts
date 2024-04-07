@@ -178,6 +178,25 @@ class API {
     });
   }
 
+  async getMovieById(id: string) {
+    const href = `${this.#apiPath}/movie/${id}`;
+
+    try {
+      const response = await fetch(href, {
+        headers: {
+          "X-API-KEY": this.#apiKey,
+        },
+      });
+      const result = await response.json();
+      console.log(result);
+
+      return result;
+    } catch (error) {
+      console.error(`Could not fetch movies with href = ${href}`);
+      console.error(error);
+    }
+  }
+
   async getRandomMovie({
     genres,
     countries,

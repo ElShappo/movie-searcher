@@ -15,7 +15,7 @@ root.render(
     <Routes>
       <Route path="/" element={<App />}>
         <Route path="/movies" element={<Movies />} />
-        <Route path="/movie" element={<Movie />} />
+        <Route path="/movie/:id" element={<Movie />} />
         <Route path="/random" element={<RandomMovie />} />
       </Route>
       <Route path="*" element={<NotFound />} />
