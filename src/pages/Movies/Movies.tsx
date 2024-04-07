@@ -153,107 +153,114 @@ const Movies = () => {
   }, [movies]);
 
   return (
-    <main>
-      <section className="w-full flex flex-wrap items-center gap-x-3 gap-y-2 justify-center pt-4">
-        <span className="pb-1">Выбрать фильм: </span>
-        <Radio.Group onChange={onRadioChange} value={radioValue}>
-          <Radio value={"movieFilters" as MoviePickRadioOption}>По фильтрам</Radio>
-          <Radio value={"movieName" as MoviePickRadioOption}>По названию</Radio>
-        </Radio.Group>
-      </section>
-      {radioValue === "movieFilters" ? (
-        <section className="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-2 pb-4">
-          <article className="flex items-center gap-x-2">
-            <span className="flex items-center">Years: </span>
-            <RangePicker
-              picker="year"
-              minDate={dayjs(minDateString, dateFormat)}
-              maxDate={dayjs()}
-              id={{
-                start: "startInput",
-                end: "endInput",
-              }}
-              onChange={(date, dateString) => {
-                const dateNumbers = dateString.map((str) => +str) as [number, number];
-                console.log(dateNumbers);
-                setStartAndEndYears(dateNumbers);
-              }}
-            />
-          </article>
-          <article className="flex items-center gap-x-2">
-            <span className="flex items-center">Countries: </span>
-            <TreeSelect
-              className="w-48 max-h-20 overflow-y-auto"
-              treeData={countries}
-              treeCheckable
-              placeholder="Choose countries"
-              onChange={handleCountriesChange}
-              loading={countriesLoading}
-              showCheckedStrategy="SHOW_PARENT"
-            />
-          </article>
-          <article className="flex items-center gap-x-2">
-            <span className="flex items-center">Age rating: </span>
-            <TreeSelect
-              className="w-48 max-h-20 overflow-y-auto"
-              treeData={ageRatings}
-              treeCheckable
-              placeholder="Choose age rating"
-              onChange={handleAgeRatingChange}
-              showCheckedStrategy="SHOW_PARENT"
-            />
-          </article>
+    <>
+      <main>
+        <section className="w-full flex flex-wrap items-center gap-x-3 gap-y-2 justify-center pt-4">
+          <span className="pb-1">Выбрать фильм: </span>
+          <Radio.Group onChange={onRadioChange} value={radioValue}>
+            <Radio value={"movieFilters" as MoviePickRadioOption}>По фильтрам</Radio>
+            <Radio value={"movieName" as MoviePickRadioOption}>По названию</Radio>
+          </Radio.Group>
         </section>
-      ) : (
-        <section className="flex flex-wrap justify-center pb-4">
-          <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
-            <Input placeholder="Find movie or series: " onChange={handleInputChange} />
+        {radioValue === "movieFilters" ? (
+          <section className="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-2 pb-4">
+            <article className="flex items-center gap-x-2">
+              <span className="flex items-center">Years: </span>
+              <RangePicker
+                picker="year"
+                minDate={dayjs(minDateString, dateFormat)}
+                maxDate={dayjs()}
+                id={{
+                  start: "startInput",
+                  end: "endInput",
+                }}
+                onChange={(date, dateString) => {
+                  const dateNumbers = dateString.map((str) => +str) as [number, number];
+                  console.log(dateNumbers);
+                  setStartAndEndYears(dateNumbers);
+                }}
+              />
+            </article>
+            <article className="flex items-center gap-x-2">
+              <span className="flex items-center">Countries: </span>
+              <TreeSelect
+                className="w-48 max-h-20 overflow-y-auto"
+                treeData={countries}
+                treeCheckable
+                placeholder="Choose countries"
+                onChange={handleCountriesChange}
+                loading={countriesLoading}
+                showCheckedStrategy="SHOW_PARENT"
+              />
+            </article>
+            <article className="flex items-center gap-x-2">
+              <span className="flex items-center">Age rating: </span>
+              <TreeSelect
+                className="w-48 max-h-20 overflow-y-auto"
+                treeData={ageRatings}
+                treeCheckable
+                placeholder="Choose age rating"
+                onChange={handleAgeRatingChange}
+                showCheckedStrategy="SHOW_PARENT"
+              />
+            </article>
+          </section>
+        ) : (
+          <section className="flex flex-wrap justify-center pb-4">
+            <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
+              <Input placeholder="Find movie or series: " onChange={handleInputChange} />
+            </div>
+          </section>
+        )}
+        <Divider className="mt-0" />
+        <section>
+          <div className="px-4 gap-8 justify-center flex flex-wrap pb-20">
+            {moviesLoading ? (
+              new Array(pageSize).fill(1).map((val, index) => (
+                <Card key={index} loading={true} style={{ width: 240 }}>
+                  <Meta title="Loading..." description="Loading..." />
+                </Card>
+              ))
+            ) : !moviesLoading && !filteredMovies.length ? (
+              <NoResults />
+            ) : (
+              filteredMovies.map((movie) => (
+                <Card
+                  key={movie.id}
+                  hoverable
+                  style={{ width: 240 }}
+                  cover={<img alt="example" src={movie.poster.url || "no-poster.jpg"} />}
+                >
+                  <Meta
+                    title={movie.name}
+                    description={
+                      movie.shortDescription ? (
+                        movie.shortDescription
+                      ) : movie.description ? (
+                        <Tooltip title={movie.description} placement="right" mouseEnterDelay={0.5}>
+                          <div>{movie.description}</div>
+                        </Tooltip>
+                      ) : (
+                        <span className="italic">Описание картины отсутствует</span>
+                      )
+                    }
+                    className="max-h-48"
+                  />
+                </Card>
+              ))
+            )}
           </div>
         </section>
-      )}
-      <Divider className="mt-0" />
-      <section>
-        <div className="px-4 gap-8 justify-center flex flex-wrap">
-          {moviesLoading ? (
-            new Array(pageSize).fill(1).map((val, index) => (
-              <Card key={index} loading={true} style={{ width: 240 }}>
-                <Meta title="Loading..." description="Loading..." />
-              </Card>
-            ))
-          ) : !moviesLoading && !filteredMovies.length ? (
-            <NoResults />
-          ) : (
-            filteredMovies.map((movie) => (
-              <Card
-                key={movie.id}
-                hoverable
-                style={{ width: 240 }}
-                cover={<img alt="example" src={movie.poster.url || "no-poster.jpg"} />}
-              >
-                <Meta
-                  title={movie.name}
-                  description={
-                    movie.shortDescription ? (
-                      movie.shortDescription
-                    ) : movie.description ? (
-                      <Tooltip title={movie.description} placement="right" mouseEnterDelay={0.5}>
-                        <div>{movie.description}</div>
-                      </Tooltip>
-                    ) : (
-                      <span className="italic">Описание картины отсутствует</span>
-                    )
-                  }
-                  className="max-h-48"
-                />
-              </Card>
-            ))
-          )}
-        </div>
-        <div className="flex justify-center py-4">
-          <Pagination onChange={onPaginationChange} total={pagesCount * 10} pageSizeOptions={pageSizeOptions} />
-        </div>
-      </section>
-    </main>
+      </main>
+      <footer className="w-full fixed flex justify-center bottom-0 bg-[#242424] bg-opacity-80">
+        <Pagination
+          onChange={onPaginationChange}
+          total={pagesCount * 10}
+          pageSizeOptions={pageSizeOptions}
+          className="py-2"
+        />
+      </footer>
+    </>
   );
 };
 

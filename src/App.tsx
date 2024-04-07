@@ -15,9 +15,7 @@ function App() {
     >
       <Header />
       <Divider className="m-0" />
-      <main>
-        <Outlet />
-      </main>
+      <Outlet />
     </ConfigProvider>
   );
 }
