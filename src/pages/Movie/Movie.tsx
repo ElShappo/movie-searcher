@@ -2,17 +2,25 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Movie } from "../../types";
 import { api } from "../../utils";
-import { Divider } from "antd";
+import { Carousel, Divider, Image } from "antd";
+import "./Movie.css";
 
 const MoviePage = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState<Movie>();
+  const [movieImages, setMovieImages] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchMovie() {
       if (id) {
         const movie = await api.getMovieById(id);
         setMovie(movie);
+
+        const rawImages = await api.getMovieImagesById(id);
+        const images = rawImages?.docs.map((item) => item.url);
+        if (images) {
+          setMovieImages(images);
+        }
       }
     }
     fetchMovie();
@@ -26,12 +34,12 @@ const MoviePage = () => {
       }}
     >
       <h1 className="text-4xl pt-10 text-center text-white font-extrabold">{movie?.name}</h1>
-      <div className="flex flex-wrap gap-x-8 pt-8 px-14">
-        <article className="w-2/5 rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
+      <div className="flex flex-wrap justify-center gap-x-8 gap-y-8 pt-8 px-14">
+        <article className="w-2/6 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
           <h2>Описание</h2>
           <p className="pt-2">{movie?.description}</p>
         </article>
-        <article className="w-1/5 rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
+        <article className="w-1/5 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
           <h2>Рейтинги</h2>
           <div className="flex items-baseline">
             <h4>IMDB: </h4>
@@ -50,6 +58,24 @@ const MoviePage = () => {
             <h4>Зарубежные критики: </h4>
             <p className="pt-2 pl-2">{movie?.rating.filmCritics}</p>
           </div>
+        </article>
+        <article className="w-2/5 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
+          <h2>Кадры</h2>
+          <Image.PreviewGroup>
+            <Carousel
+              autoplay
+              autoplaySpeed={4000}
+              infinite={false}
+              className="pt-4 pb-2"
+              dots={{ className: "text-white" }}
+            >
+              {movieImages.map((image) => (
+                <div className="!flex !justify-center">
+                  <Image src={image} alt="image" fallback="fallback.png" className="max-h-[400px]" />
+                </div>
+              ))}
+            </Carousel>
+          </Image.PreviewGroup>
         </article>
       </div>
     </section>

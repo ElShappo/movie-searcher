@@ -38,6 +38,26 @@ export type MovieUniversalSearchResponse = {
   pages: number;
 };
 
+export type MovieImage = {
+  url: string;
+  createdAt: string;
+  height: number;
+  movieId: number;
+  previewUrl: string;
+  type: string;
+  updatedAt: string;
+  width: number;
+  id: string;
+};
+
+export type MovieImageResponse = {
+  docs: MovieImage[];
+  total: number;
+  limit: number;
+  page: number;
+  pages: number;
+};
+
 export type TreeData = {
   title: string;
   value: string;

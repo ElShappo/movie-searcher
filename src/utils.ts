@@ -1,3 +1,6 @@
+import { movieImagesLimit } from "./constants";
+import { MovieImageResponse } from "./types";
+
 class API {
   #oldApiPath = "https://api.kinopoisk.dev/v1";
   #apiPath = "https://api.kinopoisk.dev/v1.4";
@@ -193,6 +196,31 @@ class API {
       return result;
     } catch (error) {
       console.error(`Could not fetch movies with href = ${href}`);
+      console.error(error);
+    }
+  }
+
+  async getMovieImagesById(id: string) {
+    const url = new URL(`${this.#apiPath}/image`);
+
+    url.searchParams.set("page", "1");
+    url.searchParams.set("limit", String(movieImagesLimit));
+    url.searchParams.set("movieId", id);
+
+    const href = url.href;
+
+    try {
+      const response = await fetch(href, {
+        headers: {
+          "X-API-KEY": this.#apiKey,
+        },
+      });
+      const result = await response.json();
+      console.log(result);
+
+      return result as MovieImageResponse;
+    } catch (error) {
+      console.error(`Could not fetch images with href = ${href}`);
       console.error(error);
     }
   }
