@@ -48,7 +48,7 @@ class API {
         },
       });
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
 
       switch (mode) {
         case "countries":
@@ -72,22 +72,44 @@ class API {
     }
   }
 
-  async getMovies({
+  // is used when there is only filtering by name
+  async #getMoviesByName(page: number, limit: number, name: string) {
+    const url = new URL(`${this.#apiPath}/movie/search`);
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("query", name);
+
+    const href = url.href;
+
+    try {
+      const response = await fetch(href, {
+        headers: {
+          "X-API-KEY": this.#apiKey,
+        },
+      });
+      const result = await response.json();
+      console.log(result);
+
+      return result;
+    } catch (error) {
+      console.error(`Could not fetch movies with href = ${href}`);
+      console.error(error);
+    }
+  }
+
+  async #getMoviesByFilters({
     limit,
     page,
-    name,
     years,
     countries,
     ratingsMpaa,
   }: {
     limit: number;
     page: number;
-    name: string;
     years?: [number, number];
     countries?: string[]; // one can get list of all countries
     ratingsMpaa?: string[];
   }) {
-    // const url = new URL(`${this.#apiPath}/movie/search`);
     const url = new URL(`${this.#apiPath}/movie`);
     url.searchParams.set("page", String(page));
     url.searchParams.set("limit", String(limit));
@@ -96,7 +118,7 @@ class API {
       url.searchParams.append("selectFields", field);
     }
 
-    if (years) {
+    if (years && years[0] && years[1]) {
       url.searchParams.append("year", years.join("-"));
     }
     if (countries) {
@@ -109,7 +131,6 @@ class API {
         url.searchParams.append("ratingMpaa", String(rating));
       }
     }
-    // url.searchParams.set("query", name);
 
     const href = url.href;
     console.log(`Total href = ${href}`);
@@ -128,6 +149,33 @@ class API {
       console.error(`Could not fetch movies with href = ${href}`);
       console.error(error);
     }
+  }
+
+  async getMovies({
+    limit,
+    page,
+    name,
+    years,
+    countries,
+    ratingsMpaa,
+  }: {
+    limit: number;
+    page: number;
+    name?: string;
+    years?: [number, number];
+    countries?: string[]; // one can get list of all countries
+    ratingsMpaa?: string[];
+  }) {
+    if (name) {
+      return this.#getMoviesByName(page, limit, name);
+    }
+    return this.#getMoviesByFilters({
+      limit,
+      page,
+      years,
+      countries,
+      ratingsMpaa,
+    });
   }
 
   async getRandomMovie({

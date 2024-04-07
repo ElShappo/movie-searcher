@@ -1,11 +1,22 @@
-import { Card, DatePicker, Divider, Input, Pagination, PaginationProps, Tooltip, TreeSelect } from "antd";
+import {
+  Card,
+  DatePicker,
+  Divider,
+  Input,
+  Pagination,
+  PaginationProps,
+  Radio,
+  RadioChangeEvent,
+  Tooltip,
+  TreeSelect,
+} from "antd";
 import Meta from "antd/es/card/Meta";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../constants";
 import { api } from "../../utils";
-import { Country, Movie, MovieUniversalSearchResponse, TreeData } from "../../types";
+import { Country, Movie, MoviePickRadioOption, MovieUniversalSearchResponse, TreeData } from "../../types";
 import NoResults from "../../components/NoResults/NoResults";
 
 dayjs.extend(customParseFormat);
@@ -29,6 +40,8 @@ const Movies = () => {
 
   const [countries, setCountries] = useState<TreeData[]>([]);
   const [countriesLoading, setCountriesLoading] = useState(false);
+
+  const [radioValue, setRadioValue] = useState<MoviePickRadioOption>("movieFilters");
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);
@@ -54,11 +67,15 @@ const Movies = () => {
     setChosenCountries(filteredValue);
   };
 
+  const onRadioChange = (e: RadioChangeEvent) => {
+    console.log("radio checked", e.target.value);
+    setRadioValue(e.target.value);
+  };
+
   useEffect(() => {
     async function fetchCountries() {
       setCountriesLoading(true);
       const countries = (await api.get("countries")) as Country[];
-      console.log(countries);
 
       const countriesTreeData = [
         {
@@ -82,6 +99,16 @@ const Movies = () => {
     }
     fetchCountries();
   }, []);
+
+  useEffect(() => {
+    if (radioValue === "movieFilters") {
+      setInputValue("");
+    } else {
+      setChosenCountries([]);
+      setChosenAgeRatings([]);
+      setStartAndEndYears(undefined);
+    }
+  }, [radioValue]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -114,62 +141,77 @@ const Movies = () => {
 
       setMovies(movies);
       setMoviesLoading(false);
+
       setPagesCount(response.pages);
     }
     fetchMovies();
   }, [chosenAgeRatings, chosenCountries, countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
 
+  const filteredMovies = useMemo(() => {
+    return movies.filter((movie) => movie.name && (movie.poster.url || movie.description || movie.shortDescription));
+    // return movies;
+  }, [movies]);
+
   return (
     <main>
-      <section className="flex flex-wrap justify-center gap-x-5 gap-y-2 p-5">
-        <article className="flex items-center gap-x-2">
-          <span className="text-xl max-md:text-base flex items-center">Years: </span>
-          <RangePicker
-            picker="year"
-            minDate={dayjs(minDateString, dateFormat)}
-            maxDate={dayjs()}
-            id={{
-              start: "startInput",
-              end: "endInput",
-            }}
-            onChange={(date, dateString) => {
-              const dateNumbers = dateString.map((str) => +str) as [number, number];
-              console.log(dateNumbers);
-              setStartAndEndYears(dateNumbers);
-            }}
-          />
-        </article>
-        <article className="flex items-center gap-x-2">
-          <span className="text-xl max-md:text-base flex items-center">Countries: </span>
-          <TreeSelect
-            className="w-48 max-h-20 overflow-y-auto"
-            treeData={countries}
-            treeCheckable
-            placeholder="Choose countries"
-            onChange={handleCountriesChange}
-            loading={countriesLoading}
-            showCheckedStrategy="SHOW_PARENT"
-          />
-        </article>
-        <article className="flex items-center gap-x-2">
-          <span className="text-xl max-md:text-base flex items-center">Age rating: </span>
-          <TreeSelect
-            className="w-48 max-h-20 overflow-y-auto"
-            treeData={ageRatings}
-            treeCheckable
-            placeholder="Choose age rating"
-            onChange={handleAgeRatingChange}
-            showCheckedStrategy="SHOW_PARENT"
-          />
-        </article>
+      <section className="w-full flex flex-wrap items-center gap-x-3 gap-y-2 justify-center pt-4">
+        <span className="pb-1">Выбрать фильм: </span>
+        <Radio.Group onChange={onRadioChange} value={radioValue}>
+          <Radio value={"movieFilters" as MoviePickRadioOption}>По фильтрам</Radio>
+          <Radio value={"movieName" as MoviePickRadioOption}>По названию</Radio>
+        </Radio.Group>
       </section>
-      <section className="flex flex-wrap justify-center">
-        <div className="w-full text-center text-xl max-md:text-base">Search by name:</div>
-        <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
-          <Input placeholder="Find movie or series: " onChange={handleInputChange} />
-        </div>
-      </section>
-      <Divider />
+      {radioValue === "movieFilters" ? (
+        <section className="flex flex-wrap justify-center gap-x-5 gap-y-2 pt-2 pb-4">
+          <article className="flex items-center gap-x-2">
+            <span className="flex items-center">Years: </span>
+            <RangePicker
+              picker="year"
+              minDate={dayjs(minDateString, dateFormat)}
+              maxDate={dayjs()}
+              id={{
+                start: "startInput",
+                end: "endInput",
+              }}
+              onChange={(date, dateString) => {
+                const dateNumbers = dateString.map((str) => +str) as [number, number];
+                console.log(dateNumbers);
+                setStartAndEndYears(dateNumbers);
+              }}
+            />
+          </article>
+          <article className="flex items-center gap-x-2">
+            <span className="flex items-center">Countries: </span>
+            <TreeSelect
+              className="w-48 max-h-20 overflow-y-auto"
+              treeData={countries}
+              treeCheckable
+              placeholder="Choose countries"
+              onChange={handleCountriesChange}
+              loading={countriesLoading}
+              showCheckedStrategy="SHOW_PARENT"
+            />
+          </article>
+          <article className="flex items-center gap-x-2">
+            <span className="flex items-center">Age rating: </span>
+            <TreeSelect
+              className="w-48 max-h-20 overflow-y-auto"
+              treeData={ageRatings}
+              treeCheckable
+              placeholder="Choose age rating"
+              onChange={handleAgeRatingChange}
+              showCheckedStrategy="SHOW_PARENT"
+            />
+          </article>
+        </section>
+      ) : (
+        <section className="flex flex-wrap justify-center pb-4">
+          <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
+            <Input placeholder="Find movie or series: " onChange={handleInputChange} />
+          </div>
+        </section>
+      )}
+      <Divider className="mt-0" />
       <section>
         <div className="px-4 gap-8 justify-center flex flex-wrap">
           {moviesLoading ? (
@@ -178,10 +220,10 @@ const Movies = () => {
                 <Meta title="Loading..." description="Loading..." />
               </Card>
             ))
-          ) : !moviesLoading && !movies.length ? (
+          ) : !moviesLoading && !filteredMovies.length ? (
             <NoResults />
           ) : (
-            movies.map((movie) => (
+            filteredMovies.map((movie) => (
               <Card
                 key={movie.id}
                 hoverable
@@ -208,7 +250,7 @@ const Movies = () => {
           )}
         </div>
         <div className="flex justify-center py-4">
-          <Pagination onChange={onPaginationChange} total={pagesCount} pageSizeOptions={pageSizeOptions} />
+          <Pagination onChange={onPaginationChange} total={pagesCount * 10} pageSizeOptions={pageSizeOptions} />
         </div>
       </section>
     </main>

@@ -9,15 +9,15 @@ import RandomMovie from "./pages/RandomMovie/RandomMovie";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/movie" element={<Movie />} />
-          <Route path="/random" element={<RandomMovie />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <BrowserRouter>
+    <Routes>
+      <Route path="/" element={<App />}>
+        <Route path="/movies" element={<Movies />} />
+        <Route path="/movie" element={<Movie />} />
+        <Route path="/random" element={<RandomMovie />} />
+      </Route>
+    </Routes>
+  </BrowserRouter>
+  // </React.StrictMode>
 );

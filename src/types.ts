@@ -44,3 +44,5 @@ export type TreeData = {
   key: string;
   children?: TreeData[];
 };
+
+export type MoviePickRadioOption = "movieFilters" | "movieName";
