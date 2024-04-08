@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Movie } from "../../types";
 import { api } from "../../utils";
-import { Carousel, Divider, Image } from "antd";
+
+import MovieDescription from "../../components/Movie/MovieDescription/MovieDescription";
+import MovieRatings from "../../components/Movie/MovieRatings/MovieRatings";
+import MovieImages from "../../components/Movie/MovieImages/MovieImages";
+
 import "./Movie.css";
+import MovieTitle from "../../components/Movie/MovieTitle/MovieTitle";
 
 const MoviePage = () => {
   const { id } = useParams();
@@ -33,62 +38,11 @@ const MoviePage = () => {
         boxShadow: "inset 0 0 200px 200px rgba(0,0,0,0.9)",
       }}
     >
-      {movie?.name ? (
-        <h1 className="text-4xl pt-10 text-center text-white font-extrabold">{movie?.name}</h1>
-      ) : (
-        <h1 className="text-4xl pt-10 text-center text-white font-extrabold italic">Без названия</h1>
-      )}
+      <MovieTitle title={movie?.name} />
       <div className="flex flex-wrap justify-center gap-x-8 gap-y-8 pt-8 px-14">
-        <article className="w-2/6 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
-          <h2>Описание</h2>
-          {movie?.description ? (
-            <p className="pt-2">{movie?.description}</p>
-          ) : (
-            <p className="pt-2 italic">Описание фильма отсутствует</p>
-          )}
-        </article>
-        <article className="w-1/5 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
-          <h2>Рейтинги</h2>
-          <div className="flex items-baseline">
-            <h4>IMDB: </h4>
-            <p className="pt-2 pl-2">{movie?.rating.imdb}</p>
-          </div>
-          <div className="flex items-baseline">
-            <h4>Кинопоиск: </h4>
-            <p className="pt-2 pl-2">{movie?.rating.kp}</p>
-          </div>
-          <Divider className="m-3" />
-          <div className="flex items-baseline">
-            <h4>Российские критики: </h4>
-            <p className="pl-2">{movie?.rating.russianFilmCritics}</p>
-          </div>
-          <div className="flex items-baseline">
-            <h4>Зарубежные критики: </h4>
-            <p className="pt-2 pl-2">{movie?.rating.filmCritics}</p>
-          </div>
-        </article>
-        <article className="w-2/5 max-xl:w-full rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
-          <h2>Кадры</h2>
-          {movieImages.length ? (
-            <Image.PreviewGroup>
-              <Carousel
-                autoplay
-                autoplaySpeed={4000}
-                infinite={false}
-                className="pt-4 pb-2"
-                dots={{ className: "text-white" }}
-              >
-                {movieImages.map((image) => (
-                  <div className="!flex !justify-center" key={image}>
-                    <Image src={image} alt="image" fallback="fallback.png" className="max-h-[400px]" />
-                  </div>
-                ))}
-              </Carousel>
-            </Image.PreviewGroup>
-          ) : (
-            <p className="pt-2 italic">По данной картине не нашлось ни одного снимка</p>
-          )}
-        </article>
+        <MovieDescription description={movie?.description} />
+        <MovieRatings rating={movie?.rating} />
+        <MovieImages images={movieImages} />
       </div>
     </section>
   );
