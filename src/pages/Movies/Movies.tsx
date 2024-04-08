@@ -14,9 +14,21 @@ import Meta from "antd/es/card/Meta";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { ageRatings, dateFormat, minDateString, pageSizeOptions } from "../../constants";
+import {
+  ageRatings,
+  dateFormat,
+  debounceTimeout,
+  minDateString,
+  pageSizeOptions,
+} from "../../constants";
 import { api } from "../../utils";
-import { Country, Movie, MoviePickRadioOption, MovieUniversalSearchResponse, TreeData } from "../../types";
+import {
+  Country,
+  Movie,
+  MoviePickRadioOption,
+  MovieUniversalSearchResponse,
+  TreeData,
+} from "../../types";
 import NoResults from "../../components/NoResults/NoResults";
 import { useNavigate } from "react-router-dom";
 
@@ -42,14 +54,18 @@ const Movies = () => {
   const [countries, setCountries] = useState<TreeData[]>([]);
   const [countriesLoading, setCountriesLoading] = useState(false);
 
-  const [radioValue, setRadioValue] = useState<MoviePickRadioOption>("movieFilters");
+  const [radioValue, setRadioValue] =
+    useState<MoviePickRadioOption>("movieFilters");
   const navigate = useNavigate();
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);
   };
 
-  const onPaginationChange: PaginationProps["onChange"] = (pageNo, pageSize) => {
+  const onPaginationChange: PaginationProps["onChange"] = (
+    pageNo,
+    pageSize
+  ) => {
     setPageNo(pageNo);
     setPageSize(pageSize);
     console.log(pageNo, pageSize);
@@ -119,7 +135,7 @@ const Movies = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setDebouncedInputValue(inputValue);
-    }, 500);
+    }, debounceTimeout);
     return () => clearTimeout(timeoutId);
   }, [inputValue]);
 
@@ -151,7 +167,15 @@ const Movies = () => {
       setPagesCount(response.pages);
     }
     fetchMovies();
-  }, [chosenAgeRatings, chosenCountries, countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
+  }, [
+    chosenAgeRatings,
+    chosenCountries,
+    countries,
+    debouncedInputValue,
+    pageNo,
+    pageSize,
+    startAndEndYears,
+  ]);
 
   const filteredMovies = useMemo(() => {
     // return movies.filter((movie) => movie.name && (movie.poster.url || movie.description || movie.shortDescription));
@@ -166,8 +190,12 @@ const Movies = () => {
         <section className="w-full flex flex-wrap items-center gap-x-3 gap-y-2 justify-center pt-4">
           <span className="pb-1">Выбрать фильм: </span>
           <Radio.Group onChange={onRadioChange} value={radioValue}>
-            <Radio value={"movieFilters" as MoviePickRadioOption}>По фильтрам</Radio>
-            <Radio value={"movieName" as MoviePickRadioOption}>По названию</Radio>
+            <Radio value={"movieFilters" as MoviePickRadioOption}>
+              По фильтрам
+            </Radio>
+            <Radio value={"movieName" as MoviePickRadioOption}>
+              По названию
+            </Radio>
           </Radio.Group>
         </section>
         {radioValue === "movieFilters" ? (
@@ -183,7 +211,10 @@ const Movies = () => {
                   end: "endInput",
                 }}
                 onChange={(date, dateString) => {
-                  const dateNumbers = dateString.map((str) => +str) as [number, number];
+                  const dateNumbers = dateString.map((str) => +str) as [
+                    number,
+                    number
+                  ];
                   console.log(dateNumbers);
                   setStartAndEndYears(dateNumbers);
                 }}
@@ -216,7 +247,10 @@ const Movies = () => {
         ) : (
           <section className="flex flex-wrap justify-center pb-4">
             <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
-              <Input placeholder="Find movie or series: " onChange={handleInputChange} />
+              <Input
+                placeholder="Find movie or series: "
+                onChange={handleInputChange}
+              />
             </div>
           </section>
         )}
@@ -237,7 +271,12 @@ const Movies = () => {
                   key={movie.id}
                   hoverable
                   style={{ width: 240 }}
-                  cover={<img alt="example" src={movie.poster.url || "no-poster.jpg"} />}
+                  cover={
+                    <img
+                      alt="example"
+                      src={movie.poster.url || "no-poster.jpg"}
+                    />
+                  }
                   onClick={() => handleCardClick(movie.id)}
                 >
                   <Meta
@@ -246,11 +285,17 @@ const Movies = () => {
                       movie.shortDescription ? (
                         movie.shortDescription
                       ) : movie.description ? (
-                        <Tooltip title={movie.description} placement="right" mouseEnterDelay={0.5}>
+                        <Tooltip
+                          title={movie.description}
+                          placement="right"
+                          mouseEnterDelay={0.5}
+                        >
                           <div>{movie.description}</div>
                         </Tooltip>
                       ) : (
-                        <span className="italic">Описание картины отсутствует</span>
+                        <span className="italic">
+                          Описание картины отсутствует
+                        </span>
                       )
                     }
                     className="max-h-48"
