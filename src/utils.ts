@@ -1,5 +1,9 @@
 import { movieImagesLimit } from "./constants";
-import { MovieCommentResponse, MovieImageResponse } from "./types";
+import {
+  MovieActorResponse,
+  MovieCommentResponse,
+  MovieImageResponse,
+} from "./types";
 
 export function prependZeroToDate(date: number) {
   if (date.toString().length === 1) {
@@ -257,6 +261,35 @@ class API {
       console.log(result);
 
       return result as MovieCommentResponse;
+    } catch (error) {
+      console.error(`Could not fetch images with href = ${href}`);
+      console.error(error);
+    }
+  }
+
+  async getMovieActorsById(id: string, page: number, limit: number) {
+    const url = new URL(`${this.#apiPath}/person`);
+
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("movieId", id);
+    url.searchParams.append("notNullFields", "name");
+    url.searchParams.append("notNullFields", "photo");
+    url.searchParams.append("profession.value", "Актер");
+    url.searchParams.append("profession.value", "Актриса");
+
+    const href = url.href;
+
+    try {
+      const response = await fetch(href, {
+        headers: {
+          "X-API-KEY": this.#apiKey,
+        },
+      });
+      const result = await response.json();
+      console.log(result);
+
+      return result as MovieActorResponse;
     } catch (error) {
       console.error(`Could not fetch images with href = ${href}`);
       console.error(error);

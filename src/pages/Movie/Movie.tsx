@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Movie, MovieComment } from "../../types";
+import { Movie, MovieActor, MovieComment } from "../../types";
 import { api, prependZeroToDate } from "../../utils";
 
 import MovieDescription from "../../components/Movie/MovieDescription/MovieDescription";
@@ -11,20 +11,30 @@ import "./Movie.css";
 import MovieTitle from "../../components/Movie/MovieTitle/MovieTitle";
 import { defaultPagesCount, pageSizeOptions } from "../../constants";
 import MovieComments from "../../components/Movie/MovieComments/MovieComments";
+import MovieActors from "../../components/Movie/MovieActors/MovieActors";
 
 const MoviePage = () => {
   const { id } = useParams();
   const [movie, setMovie] = useState<Movie>();
   const [movieImages, setMovieImages] = useState<string[]>([]);
 
+  const [comments, setComments] = useState<MovieComment[]>([]);
   const [commentsPageNo, setCommentsPageNo] = useState<number>(1);
   const [commentsPageSize, setCommentsPageSize] = useState<number>(
     pageSizeOptions[0]
   );
   const [commentsPagesCount, setCommentsPagesCount] =
     useState<number>(defaultPagesCount);
-  const [comments, setComments] = useState<MovieComment[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
+
+  const [actors, setActors] = useState<MovieActor[]>([]);
+  const [actorsPageNo, setActorsPageNo] = useState<number>(1);
+  const [actorsPageSize, setActorsPageSize] = useState<number>(
+    pageSizeOptions[0]
+  );
+  const [actorsPagesCount, setActorsPagesCount] =
+    useState<number>(defaultPagesCount);
+  const [actorsLoading, setActorsLoading] = useState(false);
 
   const commentsWithPrettyDate = useMemo(() => {
     return comments.map((comment) => {
@@ -51,7 +61,6 @@ const MoviePage = () => {
 
       setPageNo: setCommentsPageNo,
       setPageSize: setCommentsPageSize,
-      setPagesCount: setCommentsPagesCount,
     };
   }, [
     commentsWithPrettyDate,
@@ -61,10 +70,26 @@ const MoviePage = () => {
     commentsPagesCount,
   ]);
 
+  const actorsProps = useMemo(() => {
+    return {
+      actors,
+
+      pageNo: actorsPageNo,
+      pageSize: actorsPageSize,
+      pagesCount: actorsPagesCount,
+
+      isLoading: actorsLoading,
+
+      setPageNo: setActorsPageNo,
+      setPageSize: setActorsPageSize,
+    };
+  }, [actors, actorsLoading, actorsPageNo, actorsPageSize, actorsPagesCount]);
+
   useEffect(() => {
     async function fetchMovie() {
       if (id) {
         setCommentsLoading(true);
+        setActorsLoading(true);
 
         const movie = await api.getMovieById(id);
         setMovie(movie);
@@ -84,11 +109,23 @@ const MoviePage = () => {
         if (comments) {
           setComments(comments);
         }
+
+        const rawActors = await api.getMovieActorsById(
+          id,
+          actorsPageNo,
+          actorsPageSize
+        );
+        const actors = rawActors?.docs;
+        if (actors) {
+          setActors(actors);
+        }
+
         setCommentsLoading(false);
+        setActorsLoading(false);
       }
     }
     fetchMovie();
-  }, [commentsPageNo, commentsPageSize, id]);
+  }, [actorsPageNo, actorsPageSize, commentsPageNo, commentsPageSize, id]);
 
   return (
     <section
@@ -103,6 +140,7 @@ const MoviePage = () => {
         <MovieDescription description={movie?.description} />
         <MovieRatings rating={movie?.rating} />
         <MovieImages images={movieImages} />
+        <MovieActors {...actorsProps} />
         <MovieComments {...commentsProps} />
       </div>
     </section>

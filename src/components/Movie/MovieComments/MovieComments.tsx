@@ -19,7 +19,6 @@ type MovieCommentsProps = {
 
   setPageNo: React.Dispatch<React.SetStateAction<number>>;
   setPageSize: React.Dispatch<React.SetStateAction<number>>;
-  setPagesCount: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const MovieComments = ({
@@ -30,7 +29,6 @@ const MovieComments = ({
   isLoading,
   setPageNo,
   setPageSize,
-  setPagesCount,
 }: MovieCommentsProps) => {
   const onPaginationChange: PaginationProps["onChange"] = (
     pageNo,
@@ -47,7 +45,7 @@ const MovieComments = ({
       <div className="flex flex-col gap-4 justify-center pt-4">
         {isLoading ? (
           new Array(pageSize).fill(1).map((val, index) => (
-            <Card key={index} loading={true} style={{ width: 240 }}>
+            <Card key={index} loading={true}>
               <Meta title="Loading..." description="Loading..." />
             </Card>
           ))

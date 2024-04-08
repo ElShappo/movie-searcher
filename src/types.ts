@@ -80,6 +80,23 @@ export type MovieCommentResponse = {
   pages: number;
 };
 
+export type MovieActor = {
+  id: number;
+  name: string;
+  enName: string;
+  photo: string;
+  age: number;
+  sex: string;
+};
+
+export type MovieActorResponse = {
+  docs: MovieActor[];
+  total: number;
+  limit: number;
+  page: number;
+  pages: number;
+};
+
 export type TreeData = {
   title: string;
   value: string;
