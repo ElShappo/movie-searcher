@@ -58,6 +58,28 @@ export type MovieImageResponse = {
   pages: number;
 };
 
+export type MovieComment = {
+  id: number;
+  moveId: number;
+  title: string;
+  type: "Позитивный" | "Нейтральный" | "Негативный";
+  review: string;
+  date: string;
+  author: string;
+  userRating: number;
+  authorId: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MovieCommentResponse = {
+  docs: MovieComment[];
+  total: number;
+  limit: number;
+  page: number;
+  pages: number;
+};
+
 export type TreeData = {
   title: string;
   value: string;

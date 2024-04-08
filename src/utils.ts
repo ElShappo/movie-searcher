@@ -1,11 +1,24 @@
 import { movieImagesLimit } from "./constants";
-import { MovieImageResponse } from "./types";
+import { MovieCommentResponse, MovieImageResponse } from "./types";
+
+export function prependZeroToDate(date: number) {
+  if (date.toString().length === 1) {
+    return `0${date}`;
+  }
+  return date;
+}
 
 class API {
   #oldApiPath = "https://api.kinopoisk.dev/v1";
   #apiPath = "https://api.kinopoisk.dev/v1.4";
   #apiKey = String(process.env.REACT_APP_API_KEY);
-  #selectFieldsMoviesPage = ["id", "name", "description", "shortDescription", "poster"];
+  #selectFieldsMoviesPage = [
+    "id",
+    "name",
+    "description",
+    "shortDescription",
+    "poster",
+  ];
 
   #countries: [] | undefined;
   #types: [] | undefined;
@@ -225,6 +238,31 @@ class API {
     }
   }
 
+  async getMovieCommentsById(id: string, page: number, limit: number) {
+    const url = new URL(`${this.#apiPath}/review`);
+
+    url.searchParams.set("page", String(page));
+    url.searchParams.set("limit", String(limit));
+    url.searchParams.set("movieId", id);
+
+    const href = url.href;
+
+    try {
+      const response = await fetch(href, {
+        headers: {
+          "X-API-KEY": this.#apiKey,
+        },
+      });
+      const result = await response.json();
+      console.log(result);
+
+      return result as MovieCommentResponse;
+    } catch (error) {
+      console.error(`Could not fetch images with href = ${href}`);
+      console.error(error);
+    }
+  }
+
   async getSeriesEpisodesById(id: string) {}
 
   async getRandomMovie({
@@ -260,7 +298,10 @@ class API {
       }
     }
     if (releaseYearsStart) {
-      url.searchParams.append("releaseYears.start", releaseYearsStart.join("-"));
+      url.searchParams.append(
+        "releaseYears.start",
+        releaseYearsStart.join("-")
+      );
     }
     if (kpRating) {
       url.searchParams.append("rating.kp", kpRating.join("-"));
