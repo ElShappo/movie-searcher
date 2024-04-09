@@ -35,10 +35,10 @@ const MovieActors = ({
   return (
     <article className="overflow-auto rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
       <h2>Актёры</h2>
-      <div className="flex overflow-auto gap-4 pt-4">
+      <div className="flex overflow-auto gap-4 py-4">
         {isLoading ? (
           new Array(pageSize).fill(1).map((val, index) => (
-            <Card key={index} loading={true} className="min-w-[240px]">
+            <Card key={index} loading={true} className="min-w-[190px] max-lg:min-w-[170px] max-sm:min-w-[160px]">
               <Meta title={loadingMessage} description={"Загружаю данные об актёрах..."} />
             </Card>
           ))
@@ -48,7 +48,7 @@ const MovieActors = ({
           actors.map((actor) => (
             <Card
               key={actor.id}
-              className="min-w-[240px]"
+              className="min-w-[190px] max-lg:min-w-[170px] max-sm:min-w-[160px]"
               cover={<img alt="example" src={actor.photo || "/fallback.png"} />}
             >
               <Meta

@@ -45,7 +45,7 @@ const MovieSeasons = ({ seasons, isLoading }: MovieSeasonsProps) => {
             {season?.episodes.map((episode) => (
               <Card
                 key={episode.number}
-                className="min-w-[400px]"
+                className="min-w-[400px] max-lg:min-w-[360px] max-sm:min-w-[300px]"
                 cover={<img src={episode.still?.url || "/fallback.png"} alt="example" />}
               >
                 <Meta
