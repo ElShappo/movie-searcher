@@ -7,6 +7,7 @@ import { pageSizeOptions } from "../../../constants";
 import MoodIcon from "@mui/icons-material/Mood";
 import MoodBadIcon from "@mui/icons-material/MoodBad";
 import SentimentNeutralIcon from "@mui/icons-material/SentimentNeutral";
+import { prettifyDate } from "../../../utils";
 
 type MovieCommentsProps = {
   comments: MovieComment[];
@@ -30,17 +31,14 @@ const MovieComments = ({
   setPageNo,
   setPageSize,
 }: MovieCommentsProps) => {
-  const onPaginationChange: PaginationProps["onChange"] = (
-    pageNo,
-    pageSize
-  ) => {
+  const onPaginationChange: PaginationProps["onChange"] = (pageNo, pageSize) => {
     setPageNo(pageNo);
     setPageSize(pageSize);
     console.log(pageNo, pageSize);
   };
 
   return (
-    <article className="w-1/2 max-xl:w-full max-h-[600px] overflow-auto rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
+    <article className="overflow-auto rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
       <h2>Комментарии</h2>
       <div className="flex flex-col gap-4 justify-center pt-4">
         {isLoading ? (
@@ -67,21 +65,16 @@ const MovieComments = ({
                           <MoodBadIcon color="error" />
                         )}
                       </div>
-                      <h2 className="text-sm text-right text-gray-600 italic">
-                        {comment.date}
-                      </h2>
+                      <h2 className="text-sm text-right text-gray-600 italic">{prettifyDate(comment.date)}</h2>
                     </div>
                     <h2 className="text-xl flex gap-x-2">
-                      <Avatar size={35} icon={<UserOutlined />} />{" "}
-                      <span>{comment.author}</span>
+                      <Avatar size={35} icon={<UserOutlined />} /> <span>{comment.author}</span>
                     </h2>
                   </section>
                 }
                 description={
                   <section>
-                    <h3 className="pb-2 text-lg text-gray-500 font-bold">
-                      {comment.title}
-                    </h3>
+                    <h3 className="pb-2 text-lg text-gray-500 font-bold">{comment.title}</h3>
                     <p dangerouslySetInnerHTML={{ __html: comment.review }}></p>
                   </section>
                 }

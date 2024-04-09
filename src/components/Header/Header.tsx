@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <header className="flex flex-wrap max-xl:flex-col">
       <div className="flex-auto flex flex-wrap gap-y-4 justify-center items-center p-5 px-32 max-md:px-8">
-        <img src="camera.svg" alt="logo" height={60} width={60} className="max-md:h-12 max-md:w-12" />
+        <img src="/camera.svg" alt="logo" height={40} width={40} className="max-md:h-12 max-md:w-12" />
         <span className="pl-6 text-4xl max-md:text-3xl font-semibold text-kinopoisk">MovieSearcher</span>
       </div>
       <nav className="flex-auto gap-x-4 max-md:gap-x-0 flex flex-wrap justify-center items-center">

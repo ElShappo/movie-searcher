@@ -97,6 +97,33 @@ export type MovieActorResponse = {
   pages: number;
 };
 
+export type MovieSeason = {
+  movieId: number;
+  number: number;
+  createdAt: string;
+  episodes: {
+    number: number;
+    name: string;
+    enName: string;
+    still?: {
+      url: string;
+      previewUrl: string;
+    };
+    duration: number;
+    date: string;
+    airDate: string;
+    description: string | null;
+  }[];
+};
+
+export type MovieSeasonResponse = {
+  docs: MovieSeason[];
+  total: number;
+  limit: number;
+  page: number;
+  pages: number;
+};
+
 export type TreeData = {
   title: string;
   value: string;
