@@ -13,6 +13,14 @@ import MovieComments from "../../components/Movie/MovieComments/MovieComments";
 import MovieActors from "../../components/Movie/MovieActors/MovieActors";
 import { api } from "../../api";
 import MovieSeasons from "../../components/Movie/MovieSeasons/MovieSeasons";
+import { notification } from "antd";
+import {
+  MovieActorsByIdException,
+  MovieByIdException,
+  MovieCommentsByIdException,
+  MovieImagesByIdException,
+  MovieSeasonsByIdException,
+} from "../../exceptions";
 
 const MoviePage = () => {
   const { id } = useParams();
@@ -37,6 +45,8 @@ const MoviePage = () => {
 
   const [seasons, setSeasons] = useState<MovieSeason[]>([]);
   const [seasonsLoading, setSeasonsLoading] = useState(false);
+
+  const [notificationApi, contextHolder] = notification.useNotification();
 
   const commentsProps = useMemo(() => {
     return {
@@ -68,140 +78,125 @@ const MoviePage = () => {
     };
   }, [actors, actorsLoading, actorsPageNo, actorsPageSize, actorsPagesCount]);
 
-  // useEffect(() => {
-  //   async function fetchMovie() {
-  //     if (id) {
-  //       setCommentsLoading(true);
-  //       setActorsLoading(true);
-  //       setSeasonsLoading(true);
-
-  //       const movie = await api.getMovieById(id);
-  //       setMovie(movie);
-
-  //       const rawImages = await api.getMovieImagesById(id);
-  //       const images = rawImages?.docs.map((item) => item.url);
-  //       if (images) {
-  //         setMovieImages(images);
-  //       }
-
-  //       const rawComments = await api.getMovieCommentsById(id, commentsPageNo, commentsPageSize);
-  //       const comments = rawComments?.docs;
-  //       if (comments) {
-  //         setComments(comments);
-  //         setCommentsPagesCount(rawComments.pages);
-  //       }
-
-  //       const rawActors = await api.getMovieActorsById(id, actorsPageNo, actorsPageSize);
-  //       const actors = rawActors?.docs;
-  //       if (actors) {
-  //         setActors(actors);
-  //         setActorsPagesCount(rawActors.pages);
-  //       }
-
-  //       const rawSeasons = await api.getMovieSeasonsById(id);
-  //       const seasons = rawSeasons?.docs;
-  //       console.log("Got seasons:");
-  //       console.log(seasons);
-  //       if (seasons) {
-  //         setSeasons(seasons);
-  //       }
-
-  //       setCommentsLoading(false);
-  //       setActorsLoading(false);
-  //       setSeasonsLoading(false);
-  //     }
-  //   }
-  //   fetchMovie();
-  // }, [actorsPageNo, actorsPageSize, commentsPageNo, commentsPageSize, id]);
-
   useEffect(() => {
     async function fetchMovie() {
       if (id) {
         setMovieLoading(true);
 
-        const movie = await api.getMovieById(id);
-        setMovie(movie);
+        try {
+          const movie = await api.getMovieById(id);
+          setMovie(movie);
+        } catch (error) {
+          notificationApi.error({
+            message: "Произошла ошибка",
+            description: (error as MovieByIdException).message,
+            duration: 3,
+          });
+        }
 
         setMovieLoading(false);
       }
     }
     fetchMovie();
-  }, [id]);
+  }, [id, notificationApi]);
 
   useEffect(() => {
     async function fetchImages() {
       if (id) {
         setMovieImagesLoading(true);
 
-        const rawImages = await api.getMovieImagesById(id);
-        const images = rawImages?.docs.map((item) => item.url);
-        if (images) {
+        try {
+          const rawImages = await api.getMovieImagesById(id);
+          const images = rawImages.docs.map((item) => item.url);
           setMovieImages(images);
+        } catch (error) {
+          notificationApi.error({
+            message: "Произошла ошибка",
+            description: (error as MovieImagesByIdException).message,
+            duration: 3,
+          });
         }
 
         setMovieImagesLoading(false);
       }
     }
     fetchImages();
-  }, [id]);
+  }, [id, notificationApi]);
 
   useEffect(() => {
     async function fetchSeasons() {
       if (id) {
         setSeasonsLoading(true);
 
-        const rawSeasons = await api.getMovieSeasonsById(id);
-        const seasons = rawSeasons?.docs;
-        console.log("Got seasons:");
-        console.log(seasons);
-        if (seasons) {
+        try {
+          const rawSeasons = await api.getMovieSeasonsById(id);
+          const seasons = rawSeasons.docs;
           setSeasons(seasons);
+        } catch (error) {
+          notificationApi.error({
+            message: "Произошла ошибка",
+            description: (error as MovieSeasonsByIdException).message,
+            duration: 3,
+          });
         }
 
         setSeasonsLoading(false);
       }
     }
     fetchSeasons();
-  }, [id]);
+  }, [id, notificationApi]);
 
   useEffect(() => {
     async function fetchActors() {
       if (id) {
         setActorsLoading(true);
 
-        const rawActors = await api.getMovieActorsById(id, actorsPageNo, actorsPageSize);
-        const actors = rawActors?.docs;
-        if (actors) {
+        try {
+          const rawActors = await api.getMovieActorsById(id, actorsPageNo, actorsPageSize);
+          const actors = rawActors.docs;
           setActors(actors);
           setActorsPagesCount(rawActors.pages);
+        } catch (error) {
+          notificationApi.error({
+            message: "Произошла ошибка",
+            description: (error as MovieActorsByIdException).message,
+            duration: 3,
+          });
         }
 
         setActorsLoading(false);
       }
     }
     fetchActors();
-  }, [actorsPageNo, actorsPageSize, id]);
+  }, [actorsPageNo, actorsPageSize, id, notificationApi]);
 
   useEffect(() => {
     async function fetchComments() {
       if (id) {
         setCommentsLoading(true);
 
-        const rawComments = await api.getMovieCommentsById(id, commentsPageNo, commentsPageSize);
-        const comments = rawComments?.docs;
-        if (comments) {
+        try {
+          const rawComments = await api.getMovieCommentsById(id, commentsPageNo, commentsPageSize);
+          const comments = rawComments.docs;
           setComments(comments);
           setCommentsPagesCount(rawComments.pages);
+        } catch (error) {
+          notificationApi.error({
+            message: "Произошла ошибка",
+            description: (error as MovieCommentsByIdException).message,
+            duration: 3,
+          });
         }
 
         setCommentsLoading(false);
       }
     }
     fetchComments();
-  }, [commentsPageNo, commentsPageSize, id]);
+  }, [commentsPageNo, commentsPageSize, id, notificationApi]);
 
   return (
     <section>
+      {contextHolder}
       <div
         className="bg-cover min-h-[700px] shadow-inner brightness-90"
         style={{

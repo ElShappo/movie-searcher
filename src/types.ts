@@ -131,4 +131,6 @@ export type TreeData = {
   children?: TreeData[];
 };
 
+export type NotificationType = "success" | "info" | "warning" | "error";
+
 export type MoviePickRadioOption = "movieFilters" | "movieName";

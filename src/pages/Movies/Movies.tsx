@@ -9,6 +9,7 @@ import {
   RadioChangeEvent,
   Tooltip,
   TreeSelect,
+  notification,
 } from "antd";
 import Meta from "antd/es/card/Meta";
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -19,6 +20,7 @@ import { Country, Movie, MoviePickRadioOption, MovieUniversalSearchResponse, Tre
 import NoResults from "../../components/NoResults/NoResults";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
+import { ApiException } from "../../exceptions";
 
 dayjs.extend(customParseFormat);
 
@@ -43,7 +45,9 @@ const Movies = () => {
   const [countriesLoading, setCountriesLoading] = useState(false);
 
   const [radioValue, setRadioValue] = useState<MoviePickRadioOption>("movieFilters");
+
   const navigate = useNavigate();
+  const [notificationApi, contextHolder] = notification.useNotification();
 
   const handleInputChange = (event: FormEvent<HTMLInputElement>) => {
     setInputValue((event.target as HTMLInputElement).value);
@@ -129,29 +133,46 @@ const Movies = () => {
         setMoviesLoading(true);
       }, 500);
 
-      const response = (await api.getMovies({
-        limit: pageSize,
-        page: pageNo,
-        name: debouncedInputValue,
-        years: startAndEndYears,
-        countries: chosenCountries,
-        ratingsMpaa: chosenAgeRatings,
-      })) as MovieUniversalSearchResponse;
+      try {
+        const response = (await api.getMovies({
+          limit: pageSize,
+          page: pageNo,
+          name: debouncedInputValue,
+          years: startAndEndYears,
+          countries: chosenCountries,
+          ratingsMpaa: chosenAgeRatings,
+        })) as MovieUniversalSearchResponse;
 
-      const movies = response.docs;
+        const movies = response.docs;
 
-      clearTimeout(timeoutId);
+        console.warn("Got movies: ");
+        console.warn(movies);
 
-      console.warn("Got movies: ");
-      console.warn(movies);
+        setMovies(movies);
+        setMoviesLoading(false);
 
-      setMovies(movies);
-      setMoviesLoading(false);
-
-      setPagesCount(response.pages);
+        setPagesCount(response.pages);
+      } catch (error) {
+        notificationApi.error({
+          message: "Произошла ошибка",
+          description: (error as ApiException).message,
+          duration: 3,
+        });
+      } finally {
+        clearTimeout(timeoutId);
+      }
     }
     fetchMovies();
-  }, [chosenAgeRatings, chosenCountries, countries, debouncedInputValue, pageNo, pageSize, startAndEndYears]);
+  }, [
+    chosenAgeRatings,
+    chosenCountries,
+    countries,
+    debouncedInputValue,
+    notificationApi,
+    pageNo,
+    pageSize,
+    startAndEndYears,
+  ]);
 
   const filteredMovies = useMemo(() => {
     // return movies.filter((movie) => movie.name && (movie.poster.url || movie.description || movie.shortDescription));
@@ -160,8 +181,8 @@ const Movies = () => {
 
   return (
     <>
+      {contextHolder}
       <Divider className="m-0" />
-
       <main>
         <section className="w-full flex flex-wrap items-center gap-x-3 gap-y-2 justify-center pt-4">
           <span className="pb-1">Выбрать фильм: </span>
