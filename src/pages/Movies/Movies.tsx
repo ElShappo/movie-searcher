@@ -20,7 +20,7 @@ import { Country, Movie, MoviePickRadioOption, MovieUniversalSearchResponse, Tre
 import NoResults from "../../components/NoResults/NoResults";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
-import { ApiException } from "../../exceptions";
+import { ApiException, CountriesException } from "../../exceptions";
 
 dayjs.extend(customParseFormat);
 
@@ -85,30 +85,38 @@ const Movies = () => {
   useEffect(() => {
     async function fetchCountries() {
       setCountriesLoading(true);
-      const countries = (await api.get("countries")) as Country[];
 
-      const countriesTreeData = [
-        {
-          title: "All",
-          value: "all",
-          key: "all",
-          children: [],
-        },
-      ] as TreeData[];
+      try {
+        const countries = (await api.get("countries")) as Country[];
+        const countriesTreeData = [
+          {
+            title: "All",
+            value: "all",
+            key: "all",
+            children: [],
+          },
+        ] as TreeData[];
 
-      countries.forEach((country) => {
-        countriesTreeData[0].children!.push({
-          title: country.name,
-          value: country.name,
-          key: country.name,
+        countries.forEach((country) => {
+          countriesTreeData[0].children!.push({
+            title: country.name,
+            value: country.name,
+            key: country.name,
+          });
         });
-      });
 
-      setCountries(countriesTreeData);
+        setCountries(countriesTreeData);
+      } catch (error) {
+        notificationApi.error({
+          message: "Произошла ошибка",
+          description: (error as CountriesException).message,
+          duration: 3,
+        });
+      }
       setCountriesLoading(false);
     }
     fetchCountries();
-  }, []);
+  }, [notificationApi]);
 
   useEffect(() => {
     if (radioValue === "movieFilters") {
