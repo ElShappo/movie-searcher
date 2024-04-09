@@ -2,7 +2,7 @@ import { Card, Pagination, PaginationProps } from "antd";
 import { MovieActor } from "../../../types";
 import Meta from "antd/es/card/Meta";
 import NoResults from "../../NoResults/NoResults";
-import { pageSizeOptions } from "../../../constants";
+import { loadingMessage, pageSizeOptions } from "../../../constants";
 
 type MovieCommentsProps = {
   actors: MovieActor[];
@@ -39,11 +39,11 @@ const MovieActors = ({
         {isLoading ? (
           new Array(pageSize).fill(1).map((val, index) => (
             <Card key={index} loading={true} className="min-w-[240px]">
-              <Meta title="Loading..." description="Loading..." />
+              <Meta title={loadingMessage} description={"Загружаю данные об актёрах..."} />
             </Card>
           ))
-        ) : !isLoading && !actors.length ? (
-          <NoResults />
+        ) : !actors.length ? (
+          <NoResults text="Нет данных об актёрах" />
         ) : (
           actors.map((actor) => (
             <Card
@@ -55,8 +55,8 @@ const MovieActors = ({
                 title={actor.name}
                 description={
                   <section>
-                    <div>Возраст: {actor.age}</div>
-                    <div>Пол: {actor.sex}</div>
+                    {actor.age ? <div>Возраст: {actor.age}</div> : null}
+                    {actor.sex ? <div>Пол: {actor.sex}</div> : null}
                   </section>
                 }
               />

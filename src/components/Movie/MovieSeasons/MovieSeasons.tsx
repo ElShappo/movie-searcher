@@ -20,26 +20,27 @@ const MovieSeasons = ({ seasons, isLoading }: MovieSeasonsProps) => {
   return (
     <article className="overflow-auto rounded-2xl p-4 px-8 bg-gray-800 bg-opacity-60 text-white">
       <h2>Сезоны и серии:</h2>
-      <div className="pt-4">
-        <section className="w-full flex flex-wrap gap-4">
-          {seasons.map((season, index) => {
-            return (
-              <Button
-                key={season.number}
-                type={index + 1 === seasonNo ? "primary" : "default"}
-                shape="circle"
-                onClick={() => setSeasonNo(index + 1)}
-              >
-                {index + 1}
-              </Button>
-            );
-          })}
-        </section>
-        {isLoading ? (
-          <div>Загружаю список сезонов...</div>
-        ) : !isLoading && !seasons.length ? (
-          <NoResults />
-        ) : (
+      {isLoading ? (
+        <div>Загружаю список сезонов...</div>
+      ) : !isLoading && !seasons.length ? (
+        <NoResults text="Список сезонов отсутствует" />
+      ) : (
+        <div className="pt-4">
+          <section className="w-full flex flex-wrap gap-4">
+            {seasons.map((season, index) => {
+              return (
+                <Button
+                  key={season.number}
+                  type={index + 1 === seasonNo ? "primary" : "default"}
+                  shape="circle"
+                  onClick={() => setSeasonNo(index + 1)}
+                >
+                  {index + 1}
+                </Button>
+              );
+            })}
+          </section>
+
           <section className="w-full flex gap-5 overflow-auto py-4">
             {season?.episodes.map((episode) => (
               <Card
@@ -66,8 +67,8 @@ const MovieSeasons = ({ seasons, isLoading }: MovieSeasonsProps) => {
               </Card>
             ))}
           </section>
-        )}
-      </div>
+        </div>
+      )}
     </article>
   );
 };

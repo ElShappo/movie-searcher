@@ -1,4 +1,5 @@
 import { Carousel, Image } from "antd";
+import NoResults from "../../NoResults/NoResults";
 
 type MovieImagesProps = {
   images: string[];
@@ -11,7 +12,9 @@ const MovieImages = ({ images, isLoading }: MovieImagesProps) => {
       <h2>Кадры</h2>
       {isLoading ? (
         <div>Загружаю снимки...</div>
-      ) : images.length ? (
+      ) : !images.length ? (
+        <NoResults text="Не нашлось ни одного снимка" />
+      ) : (
         <Image.PreviewGroup>
           <Carousel
             autoplay
@@ -27,8 +30,6 @@ const MovieImages = ({ images, isLoading }: MovieImagesProps) => {
             ))}
           </Carousel>
         </Image.PreviewGroup>
-      ) : (
-        <p className="pt-2 italic">По данной картине не нашлось ни одного снимка</p>
       )}
     </article>
   );

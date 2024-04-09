@@ -217,7 +217,7 @@ const MoviePage = () => {
         </div>
       </div>
       <div>
-        <MovieSeasons seasons={seasons} isLoading={seasonsLoading} />
+        {seasons.length ? <MovieSeasons seasons={seasons} isLoading={seasonsLoading} /> : null}
         <MovieActors {...actorsProps} />
         <MovieComments {...commentsProps} />
       </div>

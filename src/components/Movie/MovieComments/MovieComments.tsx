@@ -3,7 +3,7 @@ import { UserOutlined } from "@ant-design/icons";
 import { MovieComment } from "../../../types";
 import Meta from "antd/es/card/Meta";
 import NoResults from "../../NoResults/NoResults";
-import { pageSizeOptions } from "../../../constants";
+import { loadingMessage, pageSizeOptions } from "../../../constants";
 import MoodIcon from "@mui/icons-material/Mood";
 import MoodBadIcon from "@mui/icons-material/MoodBad";
 import SentimentNeutralIcon from "@mui/icons-material/SentimentNeutral";
@@ -44,11 +44,11 @@ const MovieComments = ({
         {isLoading ? (
           new Array(pageSize).fill(1).map((val, index) => (
             <Card key={index} loading={true}>
-              <Meta title="Loading..." description="Loading..." />
+              <Meta title={loadingMessage} description={"Загружаю комментарии..."} />
             </Card>
           ))
-        ) : !isLoading && !comments.length ? (
-          <NoResults />
+        ) : !comments.length ? (
+          <NoResults text="Список комментариев отсутствует" />
         ) : (
           comments.map((comment) => (
             <Card key={comment.id}>

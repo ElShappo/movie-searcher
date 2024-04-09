@@ -1,3 +1,5 @@
+import NoResults from "../../NoResults/NoResults";
+
 type MovieDescriptionProps = {
   description: string | undefined;
   isLoading: boolean;
@@ -9,10 +11,10 @@ const MovieDescription = ({ description, isLoading }: MovieDescriptionProps) => 
       <h2>Описание</h2>
       {isLoading ? (
         <div>Загружаю описание...</div>
-      ) : description ? (
-        <p className="pt-2" dangerouslySetInnerHTML={{ __html: description }}></p>
+      ) : !description ? (
+        <NoResults text="Описание фильма отсутствует" />
       ) : (
-        <p className="pt-2 italic">Описание фильма отсутствует</p>
+        <p className="pt-2" dangerouslySetInnerHTML={{ __html: description }}></p>
       )}
     </article>
   );

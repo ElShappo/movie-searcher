@@ -7,6 +7,7 @@ export const pageSizeOptions = [10, 20, 50, 100];
 export const maxLimit = 200; // don't allow to get more that 'maxLimit' items at a time
 export const movieImagesLimit = 20; // such number of images is more than enough
 export const defaultPagesCount = 50;
+export const loadingMessage = "Идёт загрузка...";
 
 export const ageRatings: TreeData[] = [
   {

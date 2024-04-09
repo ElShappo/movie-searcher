@@ -1,5 +1,6 @@
 import { Divider } from "antd";
 import { Movie } from "../../../types";
+import NoResults from "../../NoResults/NoResults";
 
 type MovieRatingsProps = {
   rating: Movie["rating"] | undefined;
@@ -12,6 +13,8 @@ const MovieRatings = ({ rating, isLoading }: MovieRatingsProps) => {
       <h2>Рейтинги</h2>
       {isLoading ? (
         <div>Загружаю рейтинги...</div>
+      ) : !rating ? (
+        <NoResults text="Рейтинг фильма отсутствует" />
       ) : (
         <>
           <div className="flex items-baseline">

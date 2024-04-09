@@ -1,4 +1,17 @@
 import { maxLimit, movieImagesLimit } from "./constants";
+import {
+  CountriesException,
+  GenresException,
+  MovieActorsByIdException,
+  MovieByIdException,
+  MovieCommentsByIdException,
+  MovieImagesByIdException,
+  MovieSeasonsByIdException,
+  MoviesByFiltersException,
+  MoviesByNameException,
+  NetworksException,
+  TypesException,
+} from "./exceptions";
 import { MovieImageResponse, MovieCommentResponse, MovieActorResponse, MovieSeasonResponse } from "./types";
 
 class Api {
@@ -70,8 +83,16 @@ class Api {
 
       return result;
     } catch (error) {
-      console.error(`Could not get ${key} with href = ${href}`);
-      console.error(error);
+      switch (mode) {
+        case "countries":
+          throw new CountriesException();
+        case "types":
+          throw new TypesException();
+        case "genres":
+          throw new GenresException();
+        case "networks":
+          throw new NetworksException();
+      }
     }
   }
 
@@ -95,8 +116,7 @@ class Api {
 
       return result;
     } catch (error) {
-      console.error(`Could not fetch movies with href = ${href}`);
-      console.error(error);
+      throw new MoviesByNameException();
     }
   }
 
@@ -149,8 +169,7 @@ class Api {
 
       return result;
     } catch (error) {
-      console.error(`Could not fetch movies with href = ${href}`);
-      console.error(error);
+      throw new MoviesByFiltersException();
     }
   }
 
@@ -195,8 +214,7 @@ class Api {
 
       return result;
     } catch (error) {
-      console.error(`Could not fetch movies with href = ${href}`);
-      console.error(error);
+      throw new MovieByIdException();
     }
   }
 
@@ -220,8 +238,7 @@ class Api {
 
       return result as MovieImageResponse;
     } catch (error) {
-      console.error(`Could not fetch images with href = ${href}`);
-      console.error(error);
+      throw new MovieImagesByIdException();
     }
   }
 
@@ -245,8 +262,7 @@ class Api {
 
       return result as MovieCommentResponse;
     } catch (error) {
-      console.error(`Could not fetch images with href = ${href}`);
-      console.error(error);
+      throw new MovieCommentsByIdException();
     }
   }
 
@@ -274,8 +290,7 @@ class Api {
 
       return result as MovieActorResponse;
     } catch (error) {
-      console.error(`Could not fetch images with href = ${href}`);
-      console.error(error);
+      throw new MovieActorsByIdException();
     }
   }
 
@@ -299,8 +314,7 @@ class Api {
 
       return result as MovieSeasonResponse;
     } catch (error) {
-      console.error(`Could not fetch images with href = ${href}`);
-      console.error(error);
+      throw new MovieSeasonsByIdException();
     }
   }
 
