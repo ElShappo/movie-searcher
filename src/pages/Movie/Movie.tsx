@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Movie, MovieActor, MovieComment, MovieSeason } from "../../types";
 
 import MovieDescription from "../../components/Movie/MovieDescription/MovieDescription";
@@ -13,7 +13,8 @@ import MovieComments from "../../components/Movie/MovieComments/MovieComments";
 import MovieActors from "../../components/Movie/MovieActors/MovieActors";
 import { api } from "../../api";
 import MovieSeasons from "../../components/Movie/MovieSeasons/MovieSeasons";
-import { notification } from "antd";
+import { Button, notification } from "antd";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import {
   MovieActorsByIdException,
   MovieByIdException,
@@ -46,6 +47,7 @@ const MoviePage = () => {
   const [seasons, setSeasons] = useState<MovieSeason[]>([]);
   const [seasonsLoading, setSeasonsLoading] = useState(false);
 
+  const navigate = useNavigate();
   const [notificationApi, contextHolder] = notification.useNotification();
 
   const commentsProps = useMemo(() => {
@@ -204,6 +206,11 @@ const MoviePage = () => {
           boxShadow: "inset 0 0 200px 200px rgba(0,0,0,0.9)",
         }}
       >
+        <div className="p-6">
+          <Button type="text" className="flex items-center" onClick={() => navigate(-1)}>
+            <KeyboardBackspaceIcon fontSize="large" />
+          </Button>
+        </div>
         <MovieTitle title={movie?.name} />
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-8 py-8 px-14">
           <MovieDescription description={movie?.description} isLoading={movieLoading} />
