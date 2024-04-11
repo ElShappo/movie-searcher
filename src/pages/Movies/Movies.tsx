@@ -39,56 +39,47 @@ const { RangePicker } = DatePicker;
 const Movies = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const initialDebouncedValue = searchParams.get("name") || "";
-  const initialPageSize = +(searchParams.get("pageSize") || pageSizeOptions[0]);
-  const initialPageNo = +(searchParams.get("pageNo") || 1);
+  const debouncedValue = useMemo(() => searchParams.get("name") || "", [searchParams]);
+  const pageSize = useMemo(() => +(searchParams.get("pageSize") || pageSizeOptions[0]), [searchParams]);
+  const pageNo = useMemo(() => +(searchParams.get("pageNo") || 1), [searchParams]);
 
-  let initialRadioValue: MoviePickRadioOption;
-  let initialStartAndEndYears: [number, number];
+  const radioValue: MoviePickRadioOption = useMemo(() => {
+    if (searchParams.get("radioValue") === "movieFilters" || searchParams.get("radioValue") === "movieName") {
+      return searchParams.get("radioValue") as MoviePickRadioOption;
+    } else {
+      return "movieFilters";
+    }
+  }, [searchParams]);
 
-  if (searchParams.get("radioValue") === "movieFilters" || searchParams.get("radioValue") === "movieName") {
-    initialRadioValue = searchParams.get("radioValue") as MoviePickRadioOption;
-  } else {
-    initialRadioValue = "movieFilters";
-  }
+  const startAndEndYears: [number, number] = useMemo(() => {
+    const rawStartAndEndYears = searchParams
+      .get("startAndEndYears")
+      ?.split("-")
+      .map((year) => +year);
 
-  const rawInitialStartAndEndYears = searchParams
-    .get("startAndEndYears")
-    ?.split("-")
-    .map((year) => +year);
+    if (
+      rawStartAndEndYears &&
+      rawStartAndEndYears.length === 2 &&
+      rawStartAndEndYears[0] >= minYear &&
+      rawStartAndEndYears[1] <= maxYear
+    ) {
+      return rawStartAndEndYears as [number, number];
+    } else {
+      return [minYear, maxYear];
+    }
+  }, [searchParams]);
 
-  if (
-    rawInitialStartAndEndYears &&
-    rawInitialStartAndEndYears.length === 2 &&
-    rawInitialStartAndEndYears[0] >= minYear &&
-    rawInitialStartAndEndYears[1] <= maxYear
-  ) {
-    initialStartAndEndYears = rawInitialStartAndEndYears as [number, number];
-  } else {
-    initialStartAndEndYears = [minYear, maxYear];
-  }
+  const chosenAgeRatings = useMemo(() => searchParams.getAll("ageRating"), [searchParams]);
+  const chosenCountries = useMemo(() => searchParams.getAll("country"), [searchParams]);
 
-  const initialChosenAgeRatings = searchParams.getAll("ageRating");
-  const initialChosenCountries = searchParams.getAll("country");
-
-  const [inputValue, setInputValue] = useState(initialDebouncedValue);
-  const [debouncedInputValue, setDebouncedInputValue] = useState(initialDebouncedValue);
-
-  const [pageSize, setPageSize] = useState(initialPageSize);
+  const [inputValue, setInputValue] = useState(debouncedValue);
   const [pagesCount, setPagesCount] = useState(defaultPagesCount);
-  const [pageNo, setPageNo] = useState(initialPageNo);
 
-  const [chosenAgeRatings, setChosenAgeRatings] = useState<string[]>(initialChosenAgeRatings);
-  const [chosenCountries, setChosenCountries] = useState<string[]>(initialChosenCountries);
-
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<Movie[] | undefined>([]);
   const [moviesLoading, setMoviesLoading] = useState(true);
-  const [startAndEndYears, setStartAndEndYears] = useState<[number, number] | undefined>(initialStartAndEndYears);
 
   const [countries, setCountries] = useState<TreeData[]>([]);
   const [countriesLoading, setCountriesLoading] = useState(false);
-
-  const [radioValue, setRadioValue] = useState<MoviePickRadioOption>(initialRadioValue);
 
   const navigate = useNavigate();
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -104,9 +95,6 @@ const Movies = () => {
     urlSearchParams.set("pageNo", pageNo.toString());
 
     setSearchParams(urlSearchParams);
-
-    setPageNo(pageNo);
-    setPageSize(pageSize);
     console.log(pageNo, pageSize);
   };
 
@@ -123,7 +111,6 @@ const Movies = () => {
     }
 
     setSearchParams(urlSearchParams);
-    setChosenAgeRatings(filteredValue);
   };
 
   const handleCountriesChange = (value: string[]) => {
@@ -139,7 +126,6 @@ const Movies = () => {
     }
 
     setSearchParams(urlSearchParams);
-    setChosenCountries(filteredValue);
   };
 
   const onRadioChange = (e: RadioChangeEvent) => {
@@ -148,9 +134,7 @@ const Movies = () => {
     const urlSearchParams = new URLSearchParams(searchParams);
 
     urlSearchParams.set("radioValue", e.target.value);
-
     setSearchParams(urlSearchParams);
-    setRadioValue(e.target.value);
   };
 
   const handleCardClick = (id: string) => {
@@ -196,12 +180,14 @@ const Movies = () => {
   useEffect(() => {
     if (radioValue === "movieFilters") {
       setInputValue("");
+      searchParams.delete("name");
     } else {
-      setChosenCountries([]);
-      setChosenAgeRatings([]);
-      setStartAndEndYears(undefined);
+      const keys = ["ageRating", "country", "startAndEndYears"];
+      for (const key of keys) {
+        searchParams.delete(key);
+      }
     }
-  }, [radioValue]);
+  }, [radioValue, searchParams]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -210,7 +196,6 @@ const Movies = () => {
       urlSearchParams.set("name", inputValue);
 
       setSearchParams(urlSearchParams);
-      setDebouncedInputValue(inputValue);
     }, debounceTimeout);
     return () => clearTimeout(timeoutId);
   }, [inputValue, searchParams, setSearchParams]);
@@ -225,7 +210,7 @@ const Movies = () => {
         const response = (await api.getMovies({
           limit: pageSize,
           page: pageNo,
-          name: debouncedInputValue,
+          name: debouncedValue,
           years: startAndEndYears,
           countries: chosenCountries,
           ratingsMpaa: chosenAgeRatings,
@@ -251,12 +236,7 @@ const Movies = () => {
       }
     }
     fetchMovies();
-  }, [chosenAgeRatings, chosenCountries, debouncedInputValue, notificationApi, pageNo, pageSize, startAndEndYears]);
-
-  const filteredMovies = useMemo(() => {
-    // return movies.filter((movie) => movie.name && (movie.poster.url || movie.description || movie.shortDescription));
-    return movies;
-  }, [movies]);
+  }, [chosenAgeRatings, chosenCountries, debouncedValue, pageNo, pageSize, startAndEndYears, notificationApi]);
 
   return (
     <>
@@ -276,10 +256,7 @@ const Movies = () => {
               <span className="flex items-center">Years: </span>
               <RangePicker
                 picker="year"
-                defaultValue={[
-                  dayjs(initialStartAndEndYears[0].toString()),
-                  dayjs(initialStartAndEndYears[1].toString()),
-                ]}
+                defaultValue={[dayjs(startAndEndYears[0].toString()), dayjs(startAndEndYears[1].toString())]}
                 minDate={dayjs(minDateString, dateFormat)}
                 maxDate={dayjs(maxDateString, dateFormat)}
                 id={{
@@ -294,14 +271,13 @@ const Movies = () => {
 
                   console.log(dateNumbers);
                   setSearchParams(urlSearchParams);
-                  setStartAndEndYears(dateNumbers);
                 }}
               />
             </article>
             <article className="flex items-center gap-x-2">
               <span className="flex items-center">Countries: </span>
               <TreeSelect
-                defaultValue={initialChosenCountries}
+                defaultValue={chosenCountries}
                 className="w-48 max-h-20 overflow-y-auto"
                 treeData={countries}
                 treeCheckable
@@ -314,7 +290,7 @@ const Movies = () => {
             <article className="flex items-center gap-x-2">
               <span className="flex items-center">Age rating: </span>
               <TreeSelect
-                defaultValue={initialChosenAgeRatings}
+                defaultValue={chosenAgeRatings}
                 className="w-48 max-h-20 overflow-y-auto"
                 treeData={ageRatings}
                 treeCheckable
@@ -327,11 +303,7 @@ const Movies = () => {
         ) : (
           <section className="flex flex-wrap justify-center pb-4">
             <div className="w-[40%] max-xl:w-[50%] max-sm:w-full px-10 max-md:px-4 max-sm:px-10 pt-2">
-              <Input
-                defaultValue={initialDebouncedValue}
-                placeholder="Find movie or series: "
-                onChange={handleInputChange}
-              />
+              <Input defaultValue={debouncedValue} placeholder="Find movie or series: " onChange={handleInputChange} />
             </div>
           </section>
         )}
@@ -344,10 +316,10 @@ const Movies = () => {
                   <Meta title="Loading..." description="Loading..." />
                 </Card>
               ))
-            ) : !moviesLoading && !filteredMovies.length ? (
+            ) : !moviesLoading && !movies?.length ? (
               <NoResults />
             ) : (
-              filteredMovies.map((movie) => (
+              movies?.map((movie) => (
                 <Card
                   key={movie.id}
                   hoverable
