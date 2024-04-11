@@ -1,10 +1,13 @@
-import { ageRatings } from "./constants";
+import { ageRatings, networks } from "./constants";
 
 export type AgeRating = (typeof ageRatings)[number];
 export type Country = {
   name: string;
   slug: string;
 };
+
+export type Type = Country;
+export type Genre = Country;
 
 export type Movie = {
   id: string;
@@ -134,3 +137,5 @@ export type TreeData = {
 export type NotificationType = "success" | "info" | "warning" | "error";
 
 export type MoviePickRadioOption = "movieFilters" | "movieName";
+
+export type Networks = (typeof networks)[number];

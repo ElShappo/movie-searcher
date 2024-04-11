@@ -48,3 +48,40 @@ export const ageRatings: TreeData[] = [
     ],
   },
 ];
+
+export const networks = ["HBO", "Netflix", "Amazon", "Hulu", "Fox"] as const;
+
+export const networksTreeData: TreeData[] = [
+  {
+    title: "All",
+    value: "all",
+    key: "all",
+    children: [
+      {
+        title: "HBO",
+        value: "hbo",
+        key: "hbo",
+      },
+      {
+        title: "Netflix",
+        value: "netflix",
+        key: "netflix",
+      },
+      {
+        title: "Amazon",
+        value: "amazon",
+        key: "amazon",
+      },
+      {
+        title: "Hulu",
+        value: "hulu",
+        key: "hulu",
+      },
+      {
+        title: "Fox",
+        value: "fox",
+        key: "fox",
+      },
+    ],
+  },
+];

@@ -394,6 +394,9 @@ class Api {
           "X-API-KEY": this.#apiKey,
         },
       });
+      if (!response.ok) {
+        throw new Error();
+      }
       const result = await response.json();
       console.log(result);
 

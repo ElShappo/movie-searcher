@@ -197,7 +197,7 @@ const MoviePage = () => {
   }, [commentsPageNo, commentsPageSize, id, notificationApi]);
 
   return (
-    <section>
+    <main>
       {contextHolder}
       <div
         className="bg-cover min-h-[700px] shadow-inner brightness-90"
@@ -223,7 +223,7 @@ const MoviePage = () => {
         <MovieActors {...actorsProps} />
         <MovieComments {...commentsProps} />
       </div>
-    </section>
+    </main>
   );
 };
 

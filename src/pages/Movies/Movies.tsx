@@ -316,7 +316,7 @@ const Movies = () => {
                   <Meta title="Loading..." description="Loading..." />
                 </Card>
               ))
-            ) : !moviesLoading && !movies?.length ? (
+            ) : !movies?.length ? (
               <NoResults />
             ) : (
               movies?.map((movie) => (
