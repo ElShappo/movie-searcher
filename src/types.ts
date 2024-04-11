@@ -1,4 +1,4 @@
-import { ageRatings, networks } from "./constants";
+import { ageRatings } from "./constants";
 
 export type AgeRating = (typeof ageRatings)[number];
 export type Country = {
@@ -135,7 +135,4 @@ export type TreeData = {
 };
 
 export type NotificationType = "success" | "info" | "warning" | "error";
-
 export type MoviePickRadioOption = "movieFilters" | "movieName";
-
-export type Networks = (typeof networks)[number];

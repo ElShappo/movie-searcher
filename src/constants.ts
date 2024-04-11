@@ -49,8 +49,6 @@ export const ageRatings: TreeData[] = [
   },
 ];
 
-export const networks = ["HBO", "Netflix", "Amazon", "Hulu", "Fox"] as const;
-
 export const networksTreeData: TreeData[] = [
   {
     title: "All",
