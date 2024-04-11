@@ -49,7 +49,7 @@ const MovieActors = ({
             <Card
               key={actor.id}
               className="min-w-[190px] max-lg:min-w-[170px] max-sm:min-w-[160px]"
-              cover={<img alt="example" src={actor.photo || "/fallback.png"} />}
+              cover={<img alt="example" src={actor.photo || "/fallback.png"} className="max-h-[350px]" />}
             >
               <Meta
                 title={actor.name}
