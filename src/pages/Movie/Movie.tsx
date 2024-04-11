@@ -206,7 +206,7 @@ const MoviePage = () => {
           boxShadow: "inset 0 0 200px 200px rgba(0,0,0,0.9)",
         }}
       >
-        <div className="p-6">
+        <div className="px-6 pt-6">
           <Button type="text" className="flex items-center" onClick={() => navigate(-1)}>
             <KeyboardBackspaceIcon fontSize="large" />
           </Button>

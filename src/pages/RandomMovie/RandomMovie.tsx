@@ -69,6 +69,7 @@ const RandomMovie = () => {
       return [0, 10];
     }
   }, [searchParams]);
+  const [searchWasRun, setSearchWasRun] = useState(false);
 
   const [movie, setMovie] = useState<Movie>();
   const [movieLoading, setMovieLoading] = useState(false);
@@ -250,6 +251,7 @@ const RandomMovie = () => {
 
   async function fetchMovie() {
     setMovieLoading(true);
+    setSearchWasRun(true);
     try {
       const movie = await api.getRandomMovie({
         countries: chosenCountries,
@@ -357,7 +359,7 @@ const RandomMovie = () => {
               max={10}
               step={0.1}
               range={{ draggableTrack: true }}
-              defaultValue={[7, 10]}
+              defaultValue={startAndEndKpRatings}
               onChangeComplete={handleSliderChange}
               className="w-full"
             />
@@ -376,7 +378,9 @@ const RandomMovie = () => {
                 <Meta title="Loading..." description="Loading..." />
               </Card>
             ) : !movie ? (
-              <NoResults />
+              searchWasRun ? (
+                <NoResults />
+              ) : null
             ) : (
               <Card
                 key={movie.id}
