@@ -1,11 +1,16 @@
 import LoginIcon from "@mui/icons-material/Login";
 import { Button, ConfigProvider, FloatButton, Form, FormProps, Input, Modal, notification, theme } from "antd";
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header/Header";
 import { observer } from "mobx-react-lite";
 import authorization from "./store/authorization";
 import { PASSWORD, USERNAME } from "./constants";
+import Movies from "./pages/Movies/Movies";
+import NotFound from "./pages/NotFound/NotFound";
+import RandomMovie from "./pages/RandomMovie/RandomMovie";
+import UnauthorizedPage from "./pages/UnauthorizedPage/UnauthorizedPage";
+import Movie from "./pages/Movie/Movie";
 
 type FieldType = {
   username?: string;
@@ -60,48 +65,55 @@ const App = observer(() => {
         // algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
       }}
     >
-      {contextHolder}
-      <Header />
-      <Outlet />
-      {!authorization.get() ? (
-        <FloatButton
-          type="primary"
-          icon={
-            <div className="flex items-center justify-center">
-              <LoginIcon />
-            </div>
-          }
-          onClick={showModal}
-          className="fixed bottom-4 right-4"
-        ></FloatButton>
-      ) : null}
-      <Modal title="Авторизация" open={isModalOpen} centered footer={null} onCancel={handleCancel}>
-        <div className="flex items-center justify-center pt-2">
-          <Form name="basic" onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
-            <Form.Item<FieldType>
-              label="Имя"
-              name="username"
-              rules={[{ required: true, message: "Пожалуйста, введите имя!" }]}
-            >
-              <Input />
-            </Form.Item>
+      <BrowserRouter>
+        {contextHolder}
+        <Header />
+        <Routes>
+          <Route path="/movies" element={<Movies />} />
+          <Route path="/movie/:id" element={<Movie />} />
+          <Route path="/random" element={authorization.get() ? <RandomMovie /> : <UnauthorizedPage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+        {!authorization.get() ? (
+          <FloatButton
+            type="primary"
+            icon={
+              <div className="flex items-center justify-center">
+                <LoginIcon />
+              </div>
+            }
+            onClick={showModal}
+            className="fixed bottom-4 right-4"
+          ></FloatButton>
+        ) : null}
+        <Modal title="Авторизация" open={isModalOpen} centered footer={null} onCancel={handleCancel}>
+          <div className="flex items-center justify-center pt-2">
+            <Form name="basic" onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
+              <Form.Item<FieldType>
+                label="Имя"
+                name="username"
+                rules={[{ required: true, message: "Пожалуйста, введите имя!" }]}
+              >
+                <Input />
+              </Form.Item>
 
-            <Form.Item<FieldType>
-              label="Пароль"
-              name="password"
-              rules={[{ required: true, message: "Пожалуйста, введите пароль!" }]}
-            >
-              <Input.Password />
-            </Form.Item>
+              <Form.Item<FieldType>
+                label="Пароль"
+                name="password"
+                rules={[{ required: true, message: "Пожалуйста, введите пароль!" }]}
+              >
+                <Input.Password />
+              </Form.Item>
 
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                Подтвердить
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-      </Modal>
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Подтвердить
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+        </Modal>
+      </BrowserRouter>
     </ConfigProvider>
   );
 });
