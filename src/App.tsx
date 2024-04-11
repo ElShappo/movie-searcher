@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound/NotFound";
 import RandomMovie from "./pages/RandomMovie/RandomMovie";
 import UnauthorizedPage from "./pages/UnauthorizedPage/UnauthorizedPage";
 import Movie from "./pages/Movie/Movie";
+import FAQ from "./pages/FAQ/FAQ";
 
 type FieldType = {
   username?: string;
@@ -72,6 +73,7 @@ const App = observer(() => {
           <Route path="/movies" element={<Movies />} />
           <Route path="/movie/:id" element={<Movie />} />
           <Route path="/random" element={authorization.get() ? <RandomMovie /> : <UnauthorizedPage />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         {!authorization.get() ? (

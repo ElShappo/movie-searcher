@@ -2,6 +2,7 @@ import { Button } from "antd";
 import MovieIcon from "@mui/icons-material/Movie";
 import ShuffleIcon from "@mui/icons-material/Shuffle";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import HelpIcon from "@mui/icons-material/Help";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
@@ -28,6 +29,14 @@ const Header = () => {
           icon={<ShuffleIcon fontSize="large" />}
         >
           Random movie
+        </Button>
+        <Button
+          onClick={() => navigate(`/faq`)}
+          type="text"
+          className="flex items-center h-auto text-2xl max-md:text-xl text-kinopoisk"
+          icon={<HelpIcon fontSize="large" />}
+        >
+          FAQ
         </Button>
         <Button
           target="_blank"
