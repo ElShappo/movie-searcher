@@ -1,46 +1,74 @@
-# Getting Started with Create React App
+# Изображения
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![![alt text](image.png)](public/image.png)
 
-## Available Scripts
+![alt text](public/image-2.png)
 
-In the project directory, you can run:
+![![alt text](image-1.png)](public/image-1.png)
 
-### `npm start`
+# Запуск проекта
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Live-версию проекта можно посмотреть здесь: https://master--movie-searcher-v1.netlify.app
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Локально этот проект запускается стандартным образом через команды Create React App (CRA):
 
-### `npm test`
+#### `npm start` - запуск в dev-режиме
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+#### `npm run build` - сборка проекта
 
-### `npm run build`
+По умолчанию CRA разворачивает проект на 3000 порту. Чтобы изменить порт, следует в папке с проектом создать файл `.env` с указанием `PORT=<НУЖНЫЙ_ПОРТ>`. Например, если Вы хотите, чтобы сервер был развернут на 7070 порту, стоит написать `PORT=7070`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+<b>ВАЖНО:</b> для корректной работы программы следует указать API-ключ от сервиса https://api.kinopoisk.dev/documentation#/Фильмы%2C%20сериалы%2C%20и%20т.д./MovieController_findOneV1_4
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Чтобы это сделать, в папке с проектом надо создать файл `.env` (если он ранее уже не был создан) и написать
+`REACT_APP_API_KEY=<your api token>`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# Общая информация
 
-### `npm run eject`
+Приложение дает возможность пользователю искать кинокартины согласно выставленным критериям поиска. Картины можно искать как по названию, так и по различным фильтрам:
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+<ul>
+    <li>По году;</li>
+    <li>По странам;</li>
+    <li>По возрастному рейтингу;</li>
+</ul>
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Пользователь также может получить подробную информацию о картине при клике на ее карточку.
+Возможные ошибки со стороны API обрабатываются - при неудачном запросе пользователь увидит на сайте соответствующее предупреждение.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+# Дополнительные возможности
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+В приложении есть страница, на которой можно получить случайный фильм, исходя из выставленных значений фильтров.
 
-## Learn More
+<ul className="py-4">
+<li>По жанру;</li>
+<li>По типу картины (фильм/сериал/...);</li>
+<li>По сети производства (HBO, Netflix, ...);</li>
+<li>По рейтингу в кинопоиске;</li>
+</ul>
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+<b>ВАЖНО</b>: для того, чтобы воспользоваться случайным поиском, необходимо предварительно авторизоваться
+(авторизация состоит из ввода имени пользователя и пароля - кнопка для авторизации находится в <b>правом нижнем
+углу экрана</b>).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+<b>Имя пользователя:</b> <i>elshappo</i>\
+<b>Пароль:</b> <i>42</i>
+
+# Особенности реализации
+
+<ul>
+    <li>
+        Все фильтры, которые выставляет пользователь, сохраняются в поисковой строке, поэтому страницами с
+        результатами фильтрации можно легко обмениваться;
+    </li>
+    <li>
+        Когда пользователь ищет картины по их названию, перед отправкой запроса к API срабатывает тайм-аут в 1
+        секунду (debounce);
+    </li>
+</ul>
+
+# Стек технологий
+
+Данное приложение написано на <b>React 18</b> на языке <b>TypeScript</b> с использованием стейт-менеджера
+<b>MobX</b>, фреймворка для стилей <b>TailwindCSS</b>, а также UI-библиотеки <b>Ant Design</b>. Пагинация
+реализована с помощью <b>React Router V6</b>.
