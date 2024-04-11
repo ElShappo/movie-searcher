@@ -59,28 +59,23 @@ export const networksTreeData: TreeData[] = [
     children: [
       {
         title: "HBO",
-        value: "hbo",
-        key: "hbo",
+        value: "HBO",
+        key: "HBO",
       },
       {
         title: "Netflix",
-        value: "netflix",
-        key: "netflix",
+        value: "Netflix",
+        key: "Netflix",
       },
       {
         title: "Amazon",
-        value: "amazon",
-        key: "amazon",
+        value: "Amazon",
+        key: "Amazon",
       },
       {
         title: "Hulu",
-        value: "hulu",
-        key: "hulu",
-      },
-      {
-        title: "Fox",
-        value: "fox",
-        key: "fox",
+        value: "Hulu",
+        key: "Hulu",
       },
     ],
   },
