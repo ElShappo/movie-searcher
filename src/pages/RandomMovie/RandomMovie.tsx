@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../../api";
-import { Button, Card, DatePicker, Divider, Slider, Tooltip, TreeSelect, notification } from "antd";
+import { Button, Card, DatePicker, Divider, Slider, SliderSingleProps, Tooltip, TreeSelect, notification } from "antd";
 import { ApiException } from "../../exceptions";
 import { dateFormat, maxDateString, maxYear, minDateString, minYear, networksTreeData } from "../../constants";
 import dayjs from "dayjs";
@@ -13,6 +13,35 @@ import NoResults from "../../components/NoResults/NoResults";
 dayjs.extend(customParseFormat);
 
 const { RangePicker } = DatePicker;
+
+const marks: SliderSingleProps["marks"] = {
+  0: {
+    style: {
+      color: "red",
+    },
+    label: 0,
+  },
+  1: "1",
+  2: "2",
+  3: "3",
+  4: "4",
+  5: {
+    style: {
+      color: "gray",
+    },
+    label: 5,
+  },
+  6: "6",
+  7: "7",
+  8: "8",
+  9: "9",
+  10: {
+    style: {
+      color: "#cfca00",
+    },
+    label: <strong>10</strong>,
+  },
+};
 
 const RandomMovie = () => {
   const navigate = useNavigate();
@@ -355,6 +384,7 @@ const RandomMovie = () => {
           <article className="flex items-center gap-x-2 w-1/2 max-sm:w-full">
             <span className="flex items-center">Рейтинг на кинопоиске: </span>
             <Slider
+              marks={marks}
               min={0}
               max={10}
               step={0.1}

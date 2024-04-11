@@ -61,6 +61,11 @@ const App = observer(() => {
       theme={{
         // 1. Use dark algorithm
         algorithm: theme.darkAlgorithm,
+        components: {
+          Slider: {
+            railSize: 6,
+          },
+        },
 
         // 2. Combine dark algorithm and compact algorithm
         // algorithm: [theme.darkAlgorithm, theme.compactAlgorithm],
