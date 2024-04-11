@@ -51,11 +51,15 @@ const MovieSeasons = ({ seasons, isLoading }: MovieSeasonsProps) => {
                 <Meta
                   title={
                     <section>
-                      <h2 className="text-sm text-right text-gray-600 italic">
-                        {prettifyDate(episode.airDate, false)}
-                      </h2>
-                      <h3>{episode.name}</h3>
-                      <h3 className="text-sm text-gray-600 italic pt-2">Эпизод {episode.number}</h3>
+                      {episode.airDate ? (
+                        <h2 className="text-sm text-right text-gray-600 italic">
+                          {prettifyDate(episode.airDate, false)}
+                        </h2>
+                      ) : null}
+                      {episode.name ? <h3>{episode.name}</h3> : null}
+                      {episode.number ? (
+                        <h3 className="text-sm text-gray-600 italic pt-2">Эпизод {episode.number}</h3>
+                      ) : null}
                     </section>
                   }
                   description={
