@@ -70,7 +70,7 @@ const App = observer(() => {
         {contextHolder}
         <Header />
         <Routes>
-          <Route path="/movies" element={<Movies />} />
+          <Route index path="/" element={<Movies />} />
           <Route path="/movie/:id" element={<Movie />} />
           <Route path="/random" element={authorization.get() ? <RandomMovie /> : <UnauthorizedPage />} />
           <Route path="/faq" element={<FAQ />} />

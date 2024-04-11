@@ -15,7 +15,7 @@ const Header = () => {
       </div>
       <nav className="flex-auto gap-x-4 max-md:gap-x-0 flex flex-wrap justify-center items-center">
         <Button
-          onClick={() => navigate(`/movies`)}
+          onClick={() => navigate(`/`)}
           type="text"
           className="flex items-center h-auto text-2xl max-md:text-xl text-kinopoisk"
           icon={<MovieIcon fontSize="large" />}
