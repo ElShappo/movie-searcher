@@ -1,5 +1,8 @@
 import { TreeData } from "./types";
 
+export const USERNAME = "elshappo";
+export const PASSWORD = "42";
+
 export const debounceTimeout = 1000;
 export const dateFormat = "YYYY-MM-DD";
 
