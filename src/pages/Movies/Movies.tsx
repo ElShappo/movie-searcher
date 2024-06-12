@@ -324,7 +324,7 @@ const Movies = () => {
                   key={movie.id}
                   hoverable
                   style={{ width: 240 }}
-                  cover={<img alt="example" src={movie.poster.url || "/no-poster.jpg"} />}
+                  cover={<img alt="example" src={movie.poster?.url || "/no-poster.jpg"} />}
                   onClick={() => handleCardClick(movie.id)}
                 >
                   <Meta

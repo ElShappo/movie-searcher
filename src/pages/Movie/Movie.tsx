@@ -206,7 +206,7 @@ const MoviePage = () => {
       <div
         className="bg-cover min-h-[700px] shadow-inner brightness-90"
         style={{
-          backgroundImage: `url(${movie?.backdrop.url})`,
+          backgroundImage: `url(${movie?.backdrop?.url})`,
           boxShadow: "inset 0 0 200px 200px rgba(0,0,0,0.9)",
         }}
       >
